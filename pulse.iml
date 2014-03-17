@@ -4,9 +4,9 @@
     <exclude-output/>
     <orderEntry type="inheritedJdk"/>
     <content url="file://$MODULE_DIR$/">
-      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false"/>
-      <excludeFolder url="file://$MODULE_DIR$/build"/>
+      <sourceFolder url="file://$MODULE_DIR$/java" isTestSource="false"/>
       <excludeFolder url="file://$MODULE_DIR$/.gradle"/>
+      <excludeFolder url="file://$MODULE_DIR$/build"/>
     </content>
     <orderEntry type="sourceFolder" forTests="false"/>
     <orderEntry type="module-library" exported="">
@@ -50,17 +50,6 @@
         <JAVADOC/>
         <SOURCES>
           <root url="jar://C:/Users/i0360b6/.gradle/caches/modules-2/files-2.1/org.apache.commons/commons-lang3/3.2.1/77e5da73ecc389bda26f9953fd91e9b53b571a6f/commons-lang3-3.2.1-sources.jar!/"/>
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://C:/Users/i0360b6/.gradle/caches/modules-2/files-2.1/commons-lang/commons-lang/2.0/b2921b7862e7b26b43aa239c2c20cc16431a8ffd/commons-lang-2.0.jar!/"/>
-        </CLASSES>
-        <JAVADOC/>
-        <SOURCES>
-          <root url="jar://C:/Users/i0360b6/.gradle/caches/modules-2/files-2.1/commons-lang/commons-lang/2.0/6b72c5df6ef337cddd160a3d9ef954574184dc4/commons-lang-2.0-sources.jar!/"/>
         </SOURCES>
       </library>
     </orderEntry>
@@ -219,7 +208,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://C:/Users/i0360b6/.gradle/caches/modules-2/files-2.1/tomcat/servlet-api/5.0.16/8b9f8c1a5862003341e63f6abf264c0e87a9374a/servlet-api-5.0.16.jar!/"/>
+          <root url="jar://$MODULE_DIR$/jars/coloradoER.jar!/"/>
         </CLASSES>
         <JAVADOC/>
         <SOURCES/>
@@ -228,29 +217,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://C:/Users/i0360b6/.gradle/caches/modules-2/files-2.1/org.jfree/jfreechart/1.0.14/fa67c798b0ae80b84f3854d69e341abacd3867c5/jfreechart-1.0.14.jar!/"/>
-        </CLASSES>
-        <JAVADOC/>
-        <SOURCES>
-          <root url="jar://C:/Users/i0360b6/.gradle/caches/modules-2/files-2.1/org.jfree/jfreechart/1.0.14/744eda8a0c969531f970849d5d8fd3c542207ae7/jfreechart-1.0.14-sources.jar!/"/>
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://C:/Users/i0360b6/.gradle/caches/modules-2/files-2.1/org.jfree/jcommon/1.0.17/7bcb68fde08258e59fe7bcc758c08af830fb2c1d/jcommon-1.0.17.jar!/"/>
-        </CLASSES>
-        <JAVADOC/>
-        <SOURCES>
-          <root url="jar://C:/Users/i0360b6/.gradle/caches/modules-2/files-2.1/org.jfree/jcommon/1.0.17/77f17ad06d89cee0156cd6caffe4d03618ba9cc4/jcommon-1.0.17-sources.jar!/"/>
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://C:/Users/i0360b6/.gradle/caches/modules-2/files-2.1/hibernate/hibernate/2.1.7c/cead1e81e5c7bc0fe6cbea99239d9535bc1f1e0c/hibernate-2.1.7c.jar!/"/>
+          <root url="jar://$MODULE_DIR$/jars/jgroups.jar!/"/>
         </CLASSES>
         <JAVADOC/>
         <SOURCES/>
@@ -259,18 +226,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://C:/Users/i0360b6/.gradle/caches/modules-2/files-2.1/xml-apis/xml-apis/1.3.04/90b215f48fe42776c8c7f6e3509ec54e84fd65ef/xml-apis-1.3.04.jar!/"/>
-        </CLASSES>
-        <JAVADOC/>
-        <SOURCES>
-          <root url="jar://C:/Users/i0360b6/.gradle/caches/modules-2/files-2.1/xml-apis/xml-apis/1.3.04/d89105ccbe3fd823865330fd964233baf2b53e88/xml-apis-1.3.04-sources.jar!/"/>
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://C:/Users/i0360b6/.gradle/caches/modules-2/files-2.1/bouncycastle/bcmail-jdk14/138/14ff2dfec8578f5f6838c4d6a77a86789afe5382/bcmail-jdk14-138.jar!/"/>
+          <root url="jar://$MODULE_DIR$/jars/trull.jar!/"/>
         </CLASSES>
         <JAVADOC/>
         <SOURCES/>
@@ -279,7 +235,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://C:/Users/i0360b6/.gradle/caches/modules-2/files-2.1/bouncycastle/bcprov-jdk14/138/de366c3243a586eb3c0e2bcde1ed9bb1bfb985ff/bcprov-jdk14-138.jar!/"/>
+          <root url="jar://$MODULE_DIR$/jars/mygraph.jar!/"/>
         </CLASSES>
         <JAVADOC/>
         <SOURCES/>
@@ -288,18 +244,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://C:/Users/i0360b6/.gradle/caches/modules-2/files-2.1/com.lowagie/itext/2.1.5/a25c4c425ebf812c65184e81d4c84d22e8641b35/itext-2.1.5.jar!/"/>
-        </CLASSES>
-        <JAVADOC/>
-        <SOURCES>
-          <root url="jar://C:/Users/i0360b6/.gradle/caches/modules-2/files-2.1/com.lowagie/itext/2.1.5/2b717400d483c77dee402a5a0f3ee0f8a7cee410/itext-2.1.5-sources.jar!/"/>
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/bos-common-arch.jar!/"/>
+          <root url="jar://$MODULE_DIR$/jars/bos-common-utilities.jar!/"/>
         </CLASSES>
         <JAVADOC/>
         <SOURCES/>
@@ -308,7 +253,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/ojdbc5.jar!/"/>
+          <root url="jar://$MODULE_DIR$/jars/cache.jar!/"/>
         </CLASSES>
         <JAVADOC/>
         <SOURCES/>
@@ -317,70 +262,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/jgroups.jar!/"/>
-        </CLASSES>
-        <JAVADOC/>
-        <SOURCES/>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/bos-common-utilities.jar!/"/>
-        </CLASSES>
-        <JAVADOC/>
-        <SOURCES/>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/bos-common-logging.jar!/"/>
-        </CLASSES>
-        <JAVADOC/>
-        <SOURCES/>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/cache.jar!/"/>
-        </CLASSES>
-        <JAVADOC/>
-        <SOURCES/>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/struts.jar!/"/>
-        </CLASSES>
-        <JAVADOC/>
-        <SOURCES/>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/jaws.jar!/"/>
-        </CLASSES>
-        <JAVADOC/>
-        <SOURCES/>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/axis.jar!/"/>
-        </CLASSES>
-        <JAVADOC/>
-        <SOURCES/>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://C:/apps/logparser_b2b/build/libs/LiveLogParser.jar!/"/>
+          <root url="jar://$MODULE_DIR$/jars/ojdbc5.jar!/"/>
         </CLASSES>
         <JAVADOC/>
         <SOURCES/>
