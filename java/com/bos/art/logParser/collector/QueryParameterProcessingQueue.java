@@ -67,7 +67,7 @@ public class QueryParameterProcessingQueue implements QueryParameterProcessingQu
         registerWithMBeanServer();
     }
 
-    private Disruptor<QueryParametersEvent> disruptor = new Disruptor<QueryParametersEvent>(QueryParametersEvent.FACTORY, 512, executor,
+    private Disruptor<QueryParametersEvent> disruptor = new Disruptor<QueryParametersEvent>(QueryParametersEvent.FACTORY, 256, executor,
             ProducerType.SINGLE, new BlockingWaitStrategy());
 
     public static QueryParameterProcessingQueue getInstance() {
