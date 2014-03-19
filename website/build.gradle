@@ -35,7 +35,6 @@ dependencies {
     compile files('lib/bos-common-utilities.jar', 'lib/bos-common-logging.jar', 'lib/cache.jar');
     compile files('lib/struts.jar', 'lib/jaws.jar', 'lib/axis.jar')
 
-    //println "$parent.project.buildDir/libs/LiveLogParser.jar"
     compile files("$parent.project.buildDir/libs/LiveLogParser.jar")
 
     println "$parent.project.buildDir"

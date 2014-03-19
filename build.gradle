@@ -71,7 +71,7 @@ dependencies {
 sourceSets {
     main {
         java {
-            srcDir 'java/'
+            srcDir 'java'
         }
         resources {
             //srcDir 'src/resources'
@@ -80,80 +80,81 @@ sourceSets {
 }
 
 
-jar << {
-   // buildLiveLogParserJar.execute()
-}
-
 task copyMiscellaneousToBuildDir(type: Copy) {
     from "$project.projectDir/java"
     into "$project.buildDir"
     include "*.properties"
     include "*.yml"
-}
-
-build << {
-    buildLiveLogParserJar.execute()
-
-    copyMiscellaneousToBuildDir.execute()
+    logger.warn("copyMiscellaneousToBuildDir")
 }
 
 task buildLiveLogParserBeansJar(type: Jar, dependsOn: 'compileJava') {
     baseName = "LiveLogParserBeans"
     from sourceSets.main.output
     include "com/bos/art/logParser/broadcast/beans/*/**"
+    logger.warn("buildLiveLogParserBeansJar")
 }
 
 task buildLiveLogParserJar(type: Jar, dependsOn: 'copyMiscellaneousToBuildDir') {
-    println "LiveLogParser"
     baseName = "LiveLogParser"
 
-    //from sourceSets.main.output
     from(sourceSets.main.output) {
         //include "**/*.class"
     }
 
-    println "$project.buildDir"
+    logger.warn("$project.buildDir")
     from("$project.buildDir") {
         include "**/*.properties"
         include "*.yml"
         includeEmptyDirs = false
     }
+    logger.warn("buildLiveLogParserJar")
 }
 
 buildLiveLogParserJar << {
     buildLiveLogParserBeansJar.execute()
+    logger.warn("buildLiveLogParserJar")
 }
 
 task copyDeployFilestoDestination(type: Copy) {
-    if (hasProperty('targetpath')) {
-        from "$project.buildDir/libs/LiveLogParser.jar"
-        into "$targetpath/dist"
+    if (project.hasProperty('target')) {
+        logger.warn("target: $target" )
 
+        from "$project.buildDir/libs/LiveLogParser.jar"
+        into "$target/dist"
         // copy jars
         copy {
-            into "$targetpath/jars"
+            into "$target/jars"
             from configurations.runtime
         }
 
         copy {
             from "$project.projectDir/jars"
-            into "$targetpath/jars"
+            into "$target/jars"
             include '**/*.jar'
         }
 
         // copy miscellaneuos
         copy {
             from "$project.projectDir"
-            into "$targetpath"
+            into "$target"
             include "*.sh"
             include "*.properties"
             include "*.xml"
             include "*.yml"
         }
     }
+    logger.warn("copyDeployFilestoDestination")
+
 }
 
-task deployCodeFromExport(dependsOn: 'buildLiveLogParserJar') {
+build.doLast {
+    buildLiveLogParserJar.execute()
+    copyMiscellaneousToBuildDir.execute()
+    logger.warn("build.doLast")
+}
+
+task deployCodeFromExport(dependsOn: 'build') {
     copyDeployFilestoDestination.execute()
 }
 
