@@ -68,16 +68,6 @@ dependencies {
     testCompile "junit:junit:4.11"
 }
 
-task buildLiveLogParserJar(type: Jar) {
-    println "in buildLiveLogParserJar; "
-    baseName = "LiveLogParser"
-    from sourceSets.main.output
-}
-
-jar.doLast {
-    buildLiveLogParserJar.execute()
-}
-
 sourceSets {
     main {
         java {
@@ -90,4 +80,80 @@ sourceSets {
 }
 
 
+jar << {
+   // buildLiveLogParserJar.execute()
+}
+
+task copyMiscellaneousToBuildDir(type: Copy) {
+    from "$project.projectDir/java"
+    into "$project.buildDir"
+    include "*.properties"
+    include "*.yml"
+}
+
+build << {
+    buildLiveLogParserJar.execute()
+
+    copyMiscellaneousToBuildDir.execute()
+}
+
+task buildLiveLogParserBeansJar(type: Jar, dependsOn: 'compileJava') {
+    baseName = "LiveLogParserBeans"
+    from sourceSets.main.output
+    include "com/bos/art/logParser/broadcast/beans/*/**"
+}
+
+task buildLiveLogParserJar(type: Jar, dependsOn: 'copyMiscellaneousToBuildDir') {
+    println "LiveLogParser"
+    baseName = "LiveLogParser"
+
+    //from sourceSets.main.output
+    from(sourceSets.main.output) {
+        //include "**/*.class"
+    }
+
+    println "$project.buildDir"
+    from("$project.buildDir") {
+        include "**/*.properties"
+        include "*.yml"
+        includeEmptyDirs = false
+    }
+}
+
+buildLiveLogParserJar << {
+    buildLiveLogParserBeansJar.execute()
+}
+
+task copyDeployFilestoDestination(type: Copy) {
+    if (hasProperty('targetpath')) {
+        from "$project.buildDir/libs/LiveLogParser.jar"
+        into "$targetpath/dist"
+
+        // copy jars
+        copy {
+            into "$targetpath/jars"
+            from configurations.runtime
+        }
+
+        copy {
+            from "$project.projectDir/jars"
+            into "$targetpath/jars"
+            include '**/*.jar'
+        }
+
+        // copy miscellaneuos
+        copy {
+            from "$project.projectDir"
+            into "$targetpath"
+            include "*.sh"
+            include "*.properties"
+            include "*.xml"
+            include "*.yml"
+        }
+    }
+}
+
+task deployCodeFromExport(dependsOn: 'buildLiveLogParserJar') {
+    copyDeployFilestoDestination.execute()
+}
 
