@@ -2,37 +2,38 @@
 
 package com.bos.actions;
 
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.bcop.arch.exception.BOSApplicationRuntimeException;
+import com.bcop.arch.exception.RecoverableException;
+import com.bcop.arch.logger.Logger;
+import com.bcop.arch.patterns.pageListHandler.IPageListHandler;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
-import com.bcop.arch.exception.BOSApplicationRuntimeException;
-import com.bcop.arch.exception.RecoverableException;
-import com.bcop.arch.logger.Logger;
-import com.bcop.arch.patterns.pageListHandler.IPageListHandler;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
 
-/** Functionality common to all action handlers is implemented here. */
+/**
+ * Functionality common to all action handlers is implemented here.
+ */
 public abstract class BaseAction extends Action {
     protected static final String DOM = "xmldoc";
     protected static final String ERROR = "javax.servlet.jsp.jspException";
     protected static Logger logger;
 
-  protected static final String FORWARD_SUCCESS = "success";
-  protected static final String FORWARD_ERROR = "error"  ;
-  protected static final String FORWARD_XSLT = "xsltTransformEngine";
+    protected static final String FORWARD_SUCCESS = "success";
+    protected static final String FORWARD_ERROR = "error";
+    protected static final String FORWARD_XSLT = "xsltTransformEngine";
 
 
     /**
      * Gets the action name from struts config.  This is used wih custom fields.  A given action
      * name can be configured in the custom field service to map xml element names to custom field names.
+     *
      * @param request the HttpServletRequest associated with XML Request
      * @return String - The struts name for action handler subclass.
      */
@@ -44,42 +45,40 @@ public abstract class BaseAction extends Action {
 
 
     /**
-        Initializes your IPageListHandler instance with the requested page or range
-        from HttpServletRequest.
-        The method then uses your instance of IPageListHandler to return to you a List
-        of all elements for the requested page.  Because IPageListHandler is completely
-        transactional and caches nothing,  initialization and list retrieval are a one-step
-        process in this method.  Your instance of IPageListHandler will now provide you with
-        many inidcators as to where the requested page resides in a master set of data.  Typically,
-        you will then pass your IPageListHandler (and your dom) to PageNavigationHelper and Builder.
-        These files will then use the indicators to update your dom with xml for creating page navigation
-        links on the web page.
-    */
-    public List initialisePageListHandler(HttpServletRequest req, IPageListHandler pageListHandler) throws Exception
-    {
-      List pageElementsList;
+     * Initializes your IPageListHandler instance with the requested page or range
+     * from HttpServletRequest.
+     * The method then uses your instance of IPageListHandler to return to you a List
+     * of all elements for the requested page.  Because IPageListHandler is completely
+     * transactional and caches nothing,  initialization and list retrieval are a one-step
+     * process in this method.  Your instance of IPageListHandler will now provide you with
+     * many inidcators as to where the requested page resides in a master set of data.  Typically,
+     * you will then pass your IPageListHandler (and your dom) to PageNavigationHelper and Builder.
+     * These files will then use the indicators to update your dom with xml for creating page navigation
+     * links on the web page.
+     */
+    public List initialisePageListHandler(HttpServletRequest req, IPageListHandler pageListHandler) throws Exception {
+        List pageElementsList;
 
-      String requestedPage = req.getParameter("requestedPage");
-      String requestedPageRange = req.getParameter("requestedPageRange");
+        String requestedPage = req.getParameter("requestedPage");
+        String requestedPageRange = req.getParameter("requestedPageRange");
 
-      if(requestedPage != null){
-        pageElementsList = pageListHandler.getPage(Integer.parseInt(requestedPage));
-      }
-      else if(requestedPageRange != null){
-        pageElementsList = pageListHandler.getPageByRange(Integer.parseInt(requestedPageRange));
-      }
-      else{
-        pageElementsList = pageListHandler.getPage(1);
-      }
-      return pageElementsList;
+        if (requestedPage != null) {
+            pageElementsList = pageListHandler.getPage(Integer.parseInt(requestedPage));
+        } else if (requestedPageRange != null) {
+            pageElementsList = pageListHandler.getPageByRange(Integer.parseInt(requestedPageRange));
+        } else {
+            pageElementsList = pageListHandler.getPage(1);
+        }
+        return pageElementsList;
     }
 
 
     /**
      * This should be used in place of mapping.findForward("...") when the desired view is created from an xslt file.
+     *
      * @param String The name attribute for a given xslt forward tag in struts config.
-     * @throws mapping - The ActionMapping object passed to the execute method.
      * @return request - The HttpServletRequest passed to the execute method.
+     * @throws mapping - The ActionMapping object passed to the execute method.
      */
     public ActionForward findXsltForward(String view, ActionMapping mapping, HttpServletRequest request) {
         ActionForward forward = mapping.findForward(view);
@@ -87,43 +86,40 @@ public abstract class BaseAction extends Action {
         return mapping.findForward(FORWARD_XSLT);
     }
 
-  public ActionForward execute(ActionMapping mapping, ActionForm actionForm, HttpServletRequest request, HttpServletResponse response) {
+    public ActionForward execute(ActionMapping mapping, ActionForm actionForm, HttpServletRequest request, HttpServletResponse response) {
 
-      HashMap hmParameters = null;
-      ActionForward forward = null;
+        HashMap hmParameters = null;
+        ActionForward forward = null;
 
-      try {
-        hmParameters = getRequestParameters(request);
-        forward = processAction(mapping, actionForm, request, response);
-        if (forward==null) {
-          forward = mapping.findForward(FORWARD_SUCCESS);
-                }
-      }
-      catch (RecoverableException re) {
-          logger.error("Caught Recoverable Exception", re);
-          //forward = handleRecoverableException(re, request, mapping);
-      }
-      catch (BOSApplicationRuntimeException ure) {
-          logger.error("Caught UnRecoverable Exception", ure);
-          //forward = handleUnRecoverableException(ure, request, mapping);
-      }
-      catch (Throwable t) {
-          logger.error("execute() Unexpected error processing request", t);
-          request.setAttribute(ERROR, t);
-          forward = mapping.findForward(FORWARD_ERROR);
-      }
-      return forward;
+        try {
+            hmParameters = getRequestParameters(request);
+            forward = processAction(mapping, actionForm, request, response);
+            if (forward == null) {
+                forward = mapping.findForward(FORWARD_SUCCESS);
+            }
+        } catch (RecoverableException re) {
+            logger.error("Caught Recoverable Exception", re);
+            //forward = handleRecoverableException(re, request, mapping);
+        } catch (BOSApplicationRuntimeException ure) {
+            logger.error("Caught UnRecoverable Exception", ure);
+            //forward = handleUnRecoverableException(ure, request, mapping);
+        } catch (Throwable t) {
+            logger.error("execute() Unexpected error processing request", t);
+            request.setAttribute(ERROR, t);
+            forward = mapping.findForward(FORWARD_ERROR);
+        }
+        return forward;
     }
 
-  public static HashMap getRequestParameters(HttpServletRequest request) {
-      HashMap hm = new HashMap();
-      for (Enumeration e = request.getParameterNames(); e.hasMoreElements(); ) {
-        String strParameterName = (String)e.nextElement();
-        hm.put(strParameterName, request.getParameter(strParameterName));
-      }
-      return hm;
-  }
+    public static HashMap getRequestParameters(HttpServletRequest request) {
+        HashMap hm = new HashMap();
+        for (Enumeration e = request.getParameterNames(); e.hasMoreElements(); ) {
+            String strParameterName = (String) e.nextElement();
+            hm.put(strParameterName, request.getParameter(strParameterName));
+        }
+        return hm;
+    }
 
-  abstract public ActionForward processAction(ActionMapping mapping, ActionForm actionForm, HttpServletRequest request, HttpServletResponse response);
+    abstract public ActionForward processAction(ActionMapping mapping, ActionForm actionForm, HttpServletRequest request, HttpServletResponse response);
 
 }
