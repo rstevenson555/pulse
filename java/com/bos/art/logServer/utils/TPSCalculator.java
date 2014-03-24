@@ -63,7 +63,7 @@ public class TPSCalculator {
         CalcRecord calcRecord = tpsRecordMap.get(now.getMinuteOfHour());
         if (calcRecord==null)
             return 0;
-        long seconds = ((now.toDateTime().getMillis() - calcRecord.periodStart.toDateTime().getMillis())/1000);
+        long seconds = ((now.getMillis() - calcRecord.periodStart.getMillis())/1000);
         if ( seconds>0)
             return calcRecord.periodCount.get() / seconds;
         return 0;
