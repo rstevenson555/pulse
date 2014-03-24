@@ -61,6 +61,8 @@ public class TPSCalculator {
     public long getMessagesPerSecond() {
         DateTime now = new DateTime();
         CalcRecord calcRecord = tpsRecordMap.get(now.getMinuteOfHour());
+        if (calcRecord==null)
+            return 0;
         long seconds = ((now.toDateTime().getMillis() - calcRecord.periodStart.toDateTime().getMillis())/1000);
         if ( seconds>0)
             return calcRecord.periodCount.get() / seconds;
@@ -69,5 +71,12 @@ public class TPSCalculator {
 
     public long getTransactionCount() {
         return lifeTimeCount.get();
+    }
+
+    public static void main(String []args) {
+        TPSCalculator calculator = new TPSCalculator();
+        calculator.incrementTransaction();
+        System.out.println(calculator.getMessagesPerSecond());
+
     }
 }
