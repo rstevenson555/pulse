@@ -31,8 +31,9 @@ dependencies {
     compile 'hibernate:hibernate:2.1.7c'
     compile 'dom4j:dom4j:1.3'
     compile 'odmg:odmg:3.0'
+    compile 'javax.transaction:jta:1.1'
 
-    compile files('lib/bos-common-arch.jar','lib/cglib2.jar','lib/jta.jar')
+    compile files('lib/bos-common-arch.jar','lib/cglib2.jar')
     compile files('lib/ojdbc5.jar','lib/jgroups.jar')
     compile files('lib/bos-common-utilities.jar', 'lib/bos-common-logging.jar', 'lib/cache.jar');
     compile files('lib/struts.jar', 'lib/jaws.jar', 'lib/axis.jar')
