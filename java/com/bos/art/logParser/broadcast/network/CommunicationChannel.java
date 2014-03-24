@@ -146,6 +146,8 @@ public class CommunicationChannel extends ReceiverAdapter implements ChannelList
               //      addProtocol(gossip).
             TUNNEL tunnel = new TUNNEL();
             tunnel.setGossipRouterHosts(Engine.JAVA_GROUPS_ROUTER_SERVER+"["+Engine.JAVA_GROUPS_ROUTER_SERVER_PORT+"]");
+            logger.warn("gossip: "+Engine.JAVA_GROUPS_ROUTER_SERVER+"["+Engine.JAVA_GROUPS_ROUTER_SERVER_PORT+"]");
+            System.out.println("gossip: "+Engine.JAVA_GROUPS_ROUTER_SERVER+"["+Engine.JAVA_GROUPS_ROUTER_SERVER_PORT+"]");
             tunnel.setEnableBundling(true);
             tunnel.setDiscardIncompatiblePackets(true);
             tunnel.setMaxBundleSize(128000);
