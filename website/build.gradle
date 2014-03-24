@@ -39,7 +39,7 @@ dependencies {
 
     compile files("$parent.project.buildDir/libs/LiveLogParser.jar")
 
-//    println "$parent.project.buildDir"
+    //println "$parent.project.buildDir"
     // Declare the dependency for your favourite test framework you want to use in your tests.
     // TestNG is also supported by the Gradle Test task. Just change the
     // testCompile dependency to testCompile 'org.testng:testng:6.8.1' and add
@@ -58,6 +58,17 @@ sourceSets {
     }
 }
 
+task buildAppletJar(type: Jar) {
+    baseName = "logParser-applets"
+    from sourceSets.main.output
+    //include "com/bos/art/logParser/broadcast/beans/*/**"
+    logger.warn("buildAppletJar")
+}
+
+war.doFirst {
+    buildAppletJar.execute()
+}
+
 war {
     from('src/xsl') {
         into('stylesheets')
@@ -69,6 +80,7 @@ war {
     from('src/jsp') {
         into('jsp-dir')
     }
+    from("$project.buildDir/libs/logParser-applets.jar")
 
     webXml file('./logParser-website.xml')
 
@@ -89,12 +101,5 @@ war {
     from('META-INF') {
         into('META-INF')
     }
-}
 
-task proddeploy {
-    war.execute()
-}
-
-task stressdeploy  {
-    war.execute()
 }
