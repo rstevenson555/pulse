@@ -27,9 +27,9 @@ import java.util.logging.Level;
  */
 public class HtmlPageRecordPersistanceStrategy extends BasePersistanceStrategy implements PersistanceStrategy {
 
-    private final static int MAXBATCHINSERTSIZE = 800;
+    private final static int MAXBATCHINSERTSIZE = 600;
     private final static int INCREMENT_AMOUNT = 10;
-    private final static int MINBATCHINSERTSIZE = 700;
+    private final static int MINBATCHINSERTSIZE = 400;
     private static int currentBatchInsertSize = MINBATCHINSERTSIZE;
     private static final Object initLock = new Object();
     private static final Logger logger = (Logger) Logger.getLogger(HtmlPageRecordPersistanceStrategy.class.getName());
