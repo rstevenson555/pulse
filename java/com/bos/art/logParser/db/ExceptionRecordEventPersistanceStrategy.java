@@ -95,9 +95,9 @@ public class ExceptionRecordEventPersistanceStrategy extends BasePersistanceStra
             return new AtomicInteger(0);
         }
     };
-    private static ThreadLocal threadLocalItemInserts = new ThreadLocal() {
+    private static ThreadLocal<AtomicInteger> threadLocalItemInserts = new ThreadLocal() {
         protected synchronized Object initialValue() {
-            return new Integer(0);
+            return new AtomicInteger(0);
         }
     };
 
@@ -211,9 +211,8 @@ public class ExceptionRecordEventPersistanceStrategy extends BasePersistanceStra
     public void blockItemInsert(PreparedStatement pstmt) {
         try {
             pstmt.addBatch();
-            Integer count = (Integer) threadLocalItemInserts.get();
-            int icount = count.intValue() + 1;
-            threadLocalItemInserts.set(new Integer(icount));
+            AtomicInteger count =  threadLocalItemInserts.get();
+            int icount = count.incrementAndGet();
             if (icount % currentBatchItemInsertSize == 0) {
                 long startTime = System.currentTimeMillis();
                 pstmt.executeBatch();
