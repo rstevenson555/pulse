@@ -84,10 +84,10 @@ public class QueryParameterWriteQueue implements QueryParameterWriteQueueMBean, 
             return null;
         }
     };
-    private static ThreadLocal threadLocalInserts = new ThreadLocal() {
+    private static ThreadLocal<AtomicInteger> threadLocalInserts = new ThreadLocal() {
         @Override
         protected synchronized Object initialValue() {
-            return new Integer(0);
+            return new AtomicInteger(0);
         }
     };
     private Disruptor<DBQueryParamRecordEvent> disruptor = new Disruptor<DBQueryParamRecordEvent>(DBQueryParamRecordEvent.FACTORY, 256, executor,
@@ -251,12 +251,11 @@ public class QueryParameterWriteQueue implements QueryParameterWriteQueueMBean, 
     public void blockInsert(PreparedStatement pstmt) {
         try {
             pstmt.addBatch();
-            Integer count = (Integer) threadLocalInserts.get();
-            int icount = count.intValue() + 1;
+            AtomicInteger count =  threadLocalInserts.get();
+            int icount = count.incrementAndGet();
 
             batchNow = new DateTime();
 
-            threadLocalInserts.set(new Integer(icount));
             if (icount % currentBatchInsertSize == 0) {
                 long startTime = System.currentTimeMillis();
 

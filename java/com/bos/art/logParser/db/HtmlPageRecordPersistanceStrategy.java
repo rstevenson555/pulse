@@ -97,7 +97,7 @@ public class HtmlPageRecordPersistanceStrategy extends BasePersistanceStrategy i
 
         @Override
         protected synchronized Object initialValue() {
-            return new Integer(0);
+            return new AtomicInteger(0);
         }
     };
     private DateTime now = null;

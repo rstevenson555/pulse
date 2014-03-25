@@ -21,6 +21,7 @@ import org.apache.log4j.Logger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author I0360D3
@@ -78,16 +79,13 @@ public class ExternalTimingPersistanceStrategy extends BasePersistanceStrategy i
         }
     };
 
-    private static ThreadLocal threadLocalInserts = new ThreadLocal() {
+    private static ThreadLocal<AtomicInteger> threadLocalInserts = new ThreadLocal() {
 
         @Override
         protected synchronized Object initialValue() {
-
-            return new Integer(0);
-
+            return new AtomicInteger(0);
         }
     };
-
     private ExternalTimingPersistanceStrategy() {
 
     }
@@ -137,9 +135,8 @@ public class ExternalTimingPersistanceStrategy extends BasePersistanceStrategy i
 
         try {
             pstmt.addBatch();
-            Integer count = (Integer) threadLocalInserts.get();
-            int icount = count.intValue() + 1;
-            threadLocalInserts.set(new Integer(icount));
+            AtomicInteger count =  threadLocalInserts.get();
+            int icount = count.incrementAndGet();
             if (icount % BATCH_INSERT_SIZE == 0) {
                 pstmt.executeBatch();
             }
