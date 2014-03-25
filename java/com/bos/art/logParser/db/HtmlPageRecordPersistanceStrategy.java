@@ -18,6 +18,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 /**
@@ -31,7 +32,6 @@ public class HtmlPageRecordPersistanceStrategy extends BasePersistanceStrategy i
     private final static int INCREMENT_AMOUNT = 10;
     private final static int MINBATCHINSERTSIZE = 400;
     private static int currentBatchInsertSize = MINBATCHINSERTSIZE;
-    private static final Object initLock = new Object();
     private static final Logger logger = (Logger) Logger.getLogger(HtmlPageRecordPersistanceStrategy.class.getName());
     private static double timePerInsert = 5000.0;
     private static SingletonInstanceHelper instance = new SingletonInstanceHelper<HtmlPageRecordPersistanceStrategy>(HtmlPageRecordPersistanceStrategy.class) {
@@ -93,7 +93,7 @@ public class HtmlPageRecordPersistanceStrategy extends BasePersistanceStrategy i
             return null;
         }
     };
-    private static ThreadLocal threadLocalInserts = new ThreadLocal() {
+    private static ThreadLocal<AtomicInteger> threadLocalInserts = new ThreadLocal() {
 
         @Override
         protected synchronized Object initialValue() {
@@ -156,9 +156,8 @@ public class HtmlPageRecordPersistanceStrategy extends BasePersistanceStrategy i
     public void blockInsert(PreparedStatement pstmt) {
         try {
             pstmt.addBatch();
-            Integer count = (Integer) threadLocalInserts.get();
-            int icount = count.intValue() + 1;
-            threadLocalInserts.set(new Integer(icount));
+            AtomicInteger count =  threadLocalInserts.get();
+            int icount = count.incrementAndGet();
             batchNow = new DateTime();
 
             if (icount % currentBatchInsertSize == 0) {
