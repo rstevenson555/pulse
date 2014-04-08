@@ -43,7 +43,18 @@ public class JVMStatBroadcastStatisticsUnit extends StatisticsUnit {
 	}
 	
 	private void broadcast(AccumulatorEventTiming event) {
-		MemoryStatBean bean = new MemoryStatBean(event);
+        MemoryStatBean bean = new MemoryStatBean() {
+            public MemoryStatBean setData(AccumulatorEventTiming event) {
+                appName = event.getAppName();
+                branchName = event.getBranchName();
+                classification = event.getClassification();
+                context = event.getContext();
+                eventTime = event.getEventTime().getTime().getTime();
+                server = event.getServerName();
+                value = event.getValue();
+                return this;
+            }
+        }.setData(event);
         try {
         	//logger.error("Sending the bean down the channel " + bean.toString());
 		    CommunicationChannel.getInstance().broadcast( bean, null);

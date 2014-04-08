@@ -12,7 +12,10 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
-sourceCompatibility = 1.6
+sourceCompatibility = 1.7
+//targetCompatibility = 1.7
+version = 1.1
+group = "pulse"
 
 buildscript {
 // In this section you declare where to find the dependencies of your project
@@ -22,6 +25,7 @@ buildscript {
         mavenCentral()
         mavenLocal()
         maven { url "http://repository.jboss.org/nexus/content/repositories/deprecated" }
+        maven {url "file://localhost/tmp/myRepo/"}
     }
 }
 
@@ -30,15 +34,23 @@ allprojects {
     repositories {
         // Use 'maven central' for resolving your dependencies.
         // You can declare any Maven/Ivy/file repository here.
+        def localRepoURL = 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
+
         mavenCentral()
         mavenLocal()
         maven { url "http://repository.jboss.org/nexus/content/repositories/deprecated" }
+        maven {url localRepoURL}
+
     }
 }
+
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
     // The production code uses the SLF4J logging API at compile time
+    compile project('LiveLogParserBeans')
+//    println "$project.projectDir/LiveLogParserBeans/build/libs/LiveLogParserBeans.jar"
+    //compile files('$project.projectDir/LiveLogParserBeans/build/libs/LiveLogParserBeans.jar')
     compile 'org.jsoup:jsoup:1.7.2'
     compile 'joda-time:joda-time:2.1'
     compile 'org.yaml:snakeyaml:1.10'
@@ -78,7 +90,6 @@ sourceSets {
         }
     }
 }
-
 
 task copyMiscellaneousToBuildDir(type: Copy) {
     from "$project.projectDir/java"

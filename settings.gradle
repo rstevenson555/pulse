@@ -11,5 +11,5 @@
 
 
 rootProject.name = 'pulse'
-include "website"
+include 'LiveLogParserBeans','logParser-applets', 'website','Scripts'
 

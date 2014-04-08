@@ -9,6 +9,8 @@ package com.bos.art.logParser.statistics;
 import com.bos.art.logParser.broadcast.beans.AccessRecordsMinuteBean;
 import com.bos.art.logParser.broadcast.beans.ExternalAccessRecordsMinuteBean;
 import com.bos.art.logParser.broadcast.beans.TransferBean;
+import com.bos.art.logParser.broadcast.beans.MinuteStatsKey;
+
 import com.bos.art.logParser.db.ForeignKeyStore;
 import com.bos.art.logServer.utils.Scheduler;
 import com.bos.helper.SingletonInstanceHelper;
@@ -32,6 +34,8 @@ import static com.bos.art.logServer.utils.TimeIntervalConstants.*;
  */
 public class StatisticsModule extends TimerTask implements Serializable {
     private static Logger logger = null;
+    private static final DateTimeFormatter fdfKey = DateTimeFormat.forPattern("yyyyMMddHHmm");
+
     private static SingletonInstanceHelper instance = new SingletonInstanceHelper<StatisticsModule>(StatisticsModule.class) {
         @Override
         public java.lang.Object createInstance() {
@@ -172,7 +176,35 @@ public class StatisticsModule extends TimerTask implements Serializable {
         for (MinuteStatsKey s : mStatsData.keySet()) {
             TimeSpanEventContainer timeSpanEventContainer = mStatsData.get(s);
             if (timeSpanEventContainer.getTime().getTimeInMillis() > broadCastLimitTime) {
-                beans.add(new AccessRecordsMinuteBean(timeSpanEventContainer, s));
+                //beans.add(new AccessRecordsMinuteBeanImpl(timeSpanEventContainer, s));
+                beans.add(new AccessRecordsMinuteBean() {
+                    public AccessRecordsMinuteBean setData(TimeSpanEventContainer tsec, MinuteStatsKey lkey) {
+                        //mkey = lkey;
+                        setMkey(lkey);
+                        context = tsec.getContext();
+                        machine = lkey.getServerName();
+                        instance = lkey.getInstanceName();
+                        timeString = fdfKey.print(new DateTime(lkey.getTime()));
+                        totalLoads = tsec.getTotalLoads();
+                        averageLoadTime = tsec.getAverageLoadTime();
+                        totalLoadTime = tsec.getTotalLoadTime();
+                        maxLoadTime = tsec.getMaxLoadTime();
+                        minLoadTime = tsec.getMinLoadTime();
+                        distinctUsers = tsec.getDistinctUsers();
+                        totalUsers = tsec.getTotalUsers();
+                        errorPages = tsec.getErrorPages();
+                        thirtySecondLoads = tsec.getThirtySecondLoads();
+                        twentySecondLoads = tsec.getTwentySecondLoads();
+                        fifteenSecondLoads = tsec.getFifteenSecondLoads();
+                        tenSecondLoads = tsec.getTenSecondLoads();
+                        fiveSecondLoads = tsec.getFiveSecondLoads();
+                        i90Percentile = tsec.get90Percentile();
+                        i75Percentile = tsec.get75Percentile();
+                        i50Percentile = tsec.get50Percentile();
+                        i25Percentile = tsec.get25Percentile();
+                        return this;
+                    }
+                }.setData(timeSpanEventContainer, s));
             }
         }
 
@@ -184,7 +216,7 @@ public class StatisticsModule extends TimerTask implements Serializable {
         for (String s : timeSpanEventContainerMap.keySet()) {
             TimeSpanEventContainer timeSpanEventContainer = timeSpanEventContainerMap.get(s);
             if (timeSpanEventContainer.getTime().getTimeInMillis() > broadCastLimitTime) {
-                beans.add(new ExternalAccessRecordsMinuteBean(timeSpanEventContainer, s));
+                beans.add(new ExternalAccessRecordsMinuteBeanImpl(timeSpanEventContainer, s));
             }
         }
         logger.warn("Total Beans Collected From Backfill Broadcast :" + beans.size()

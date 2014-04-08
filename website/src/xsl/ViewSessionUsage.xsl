@@ -9,31 +9,11 @@
   <xsl:template match="DashBoard">
    <a href="ViewDailySessionSummary.web" title="Return to home page" accesskey="1"><img src="images/ekg.gif" width="209" style="height:155px;" alt="Pulse logo"/></a>
     <div id="tools">
-        <!--<ul id="mainNav" style="display:none;">
-            <li><a href="download.html" title="Real time charts of boiseoffice.com performance">Production Environment</a></li>
-            <li><a href="products/" title="Historical charts of boiseoffice.com performance">Test Environment</a></li>
-            <li><a href="support/" title="Report a bug">Development Environment</a></li>
-        </ul> -->
         <!-- closes #textSize-->
         <div id="sf" style="height:155px;display:none">
             <div id="realtimegraphs">
                 <div id="chatdiv">
           
-                <!--
-                    <APPLET ARCHIVE="commons-logging.jar,log4j.jar,jfreechart-0.9.18.jar,commons-collections-3.0.jar,jcommon-0.9.3.jar,logParser-applets.jar,LiveLogParser.jar,jgroups-core.jar,bos-common-logging.jar" 
-                        CODE="com.bos.applets.MessagingApplet"
-                        width="325" height="120" ALT="You should see an applet, not this text.">
-                        <param name="plot_image" VALUE = "/images/bg2.gif"/>
-                        <param name="chart_bgcolor" VALUE = "#FFFFFF"/>
-                    </APPLET> 
-          
-                    <APPLET ARCHIVE="commons-logging.jar,log4j.jar,jfreechart-0.9.18.jar,commons-collections-3.0.jar,jcommon-0.9.3.jar,logParser-applets.jar,LiveLogParser.jar,jgroups-core.jar,bos-common-logging.jar" 
-                        CODE="com.bos.applets.LiveSessions"
-                        width="220" height="120" ALT="You should see an applet, not this text.">
-                        <param name="plot_image" VALUE = "/images/bg2.gif"/>
-                        <param name="chart_bgcolor" VALUE = "#FFFFFF"/>
-                    </APPLET> 
-                    -->
                 </div>
             </div>
         </div>
@@ -101,27 +81,6 @@
         </dl>
 
 
-        <!--
-        <dl>
-            <dt class="im"/>
-            <dd>
-                <p>Customer Validation Response Time</p>
-                <img src="images/graph.jpg"/>
-            </dd>
-
-            <dt class="im"/>
-            <dd>
-                <p>Customer Pricing Response Time</p>
-                <img src="images/graph.jpg"/>
-            </dd>
-    
-            <dt class="im"/>
-            <dd>
-                <p>Campaigns Response Time</p>
-                <img src="images/graph.jpg"/>
-            </dd>
-        </dl>
-        -->
 
         <h2>Contact us on issues identified in ART</h2>
         <dl class="footerbg">

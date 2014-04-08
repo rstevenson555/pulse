@@ -14,6 +14,7 @@ package com.bos.art.logParser.statistics;
 
 
 import com.bos.art.logParser.broadcast.beans.AccessRecordsMinuteBean;
+import com.bos.art.logParser.broadcast.beans.MinuteStatsKey;
 import com.bos.art.logParser.broadcast.network.CommunicationChannel;
 import com.bos.art.logParser.db.AccessRecordPersistanceStrategy;
 import com.bos.art.logParser.db.ConnectionPoolT;
@@ -300,7 +301,34 @@ public class AccessRecordsMinuteMachineStats extends StatisticsUnit {
 
 
     private void broadcast(TimeSpanEventContainer tsec, MinuteStatsKey nextKey) {
-        AccessRecordsMinuteBean bean = new AccessRecordsMinuteBean(tsec, nextKey);
+        AccessRecordsMinuteBean bean = new AccessRecordsMinuteBean() {
+            public AccessRecordsMinuteBean setData(TimeSpanEventContainer tsec,MinuteStatsKey lkey ) {
+                //mkey = lkey;
+                setMkey(lkey);
+                context = tsec.getContext();
+                machine = lkey.getServerName();
+                instance = lkey.getInstanceName();
+                timeString = fdfKey.print( new DateTime(lkey.getTime()) );
+                totalLoads = tsec.getTotalLoads();
+                averageLoadTime = tsec.getAverageLoadTime();
+                totalLoadTime = tsec.getTotalLoadTime();
+                maxLoadTime = tsec.getMaxLoadTime();
+                minLoadTime = tsec.getMinLoadTime();
+                distinctUsers = tsec.getDistinctUsers();
+                totalUsers = tsec.getTotalUsers();
+                errorPages = tsec.getErrorPages();
+                thirtySecondLoads = tsec.getThirtySecondLoads();
+                twentySecondLoads = tsec.getTwentySecondLoads();
+                fifteenSecondLoads = tsec.getFifteenSecondLoads();
+                tenSecondLoads = tsec.getTenSecondLoads();
+                fiveSecondLoads = tsec.getFiveSecondLoads();
+                i90Percentile = tsec.get90Percentile();
+                i75Percentile = tsec.get75Percentile();
+                i50Percentile = tsec.get50Percentile();
+                i25Percentile = tsec.get25Percentile();
+                return this;
+            }
+        }.setData(tsec,nextKey);
         try {
             CommunicationChannel.getInstance().broadcast(bean, null);
         } catch (Exception e) {
@@ -315,18 +343,18 @@ public class AccessRecordsMinuteMachineStats extends StatisticsUnit {
         try {
 
             logger.warn("insertData: " + nextKey);
-            logger.warn("insertData sub12: " + nextKey.serverName);
+            logger.warn("insertData sub12: " + nextKey.getServerName());
             int machineID =
                     ForeignKeyStore.getInstance().getForeignKey(
                             tsec.getAccessRecordsForeignKeys(),
-                            nextKey.serverName,
+                            nextKey.getServerName(),
                             ForeignKeyStore.FK_MACHINES_MACHINE_ID,
                             pStrat);
 
             int instanceID =
                     ForeignKeyStore.getInstance().getForeignKey(
                             tsec.getAccessRecordsForeignKeys(),
-                            nextKey.instanceName,
+                            nextKey.getInstanceName(),
                             ForeignKeyStore.FK_INSTANCES_INSTANCE_ID,
                             pStrat);
 
@@ -341,7 +369,7 @@ public class AccessRecordsMinuteMachineStats extends StatisticsUnit {
             try {
 
                 //DateTime dt = sdfDate.parseDateTime(nextKey.substring(0, 12) + "00");
-                DateTime dt = new DateTime(nextKey.time).withSecondOfMinute(0);
+                DateTime dt = new DateTime(nextKey.getTime()).withSecondOfMinute(0);
                 d = dt.toDate();
             } catch (IllegalArgumentException pe) {
                 d = new Date();
@@ -408,14 +436,14 @@ public class AccessRecordsMinuteMachineStats extends StatisticsUnit {
             int machineID =
                     ForeignKeyStore.getInstance().getForeignKey(
                             tsec.getAccessRecordsForeignKeys(),
-                            nextKey.serverName,
+                            nextKey.getServerName(),
                             ForeignKeyStore.FK_MACHINES_MACHINE_ID,
                             pStrat);
 
             int instanceID =
                     ForeignKeyStore.getInstance().getForeignKey(
                             tsec.getAccessRecordsForeignKeys(),
-                            nextKey.instanceName,
+                            nextKey.getInstanceName(),
                             ForeignKeyStore.FK_INSTANCES_INSTANCE_ID,
                             pStrat);
 
@@ -441,7 +469,7 @@ public class AccessRecordsMinuteMachineStats extends StatisticsUnit {
             pstmt.setInt(17, machineID);
             Date d = null;
             try {
-                DateTime dt = new DateTime(nextKey.time).withSecondOfMinute(0);
+                DateTime dt = new DateTime(nextKey.getTime()).withSecondOfMinute(0);
                 d = dt.toDate();
             } catch (IllegalArgumentException pe) {
                 d = new Date();

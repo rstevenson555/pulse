@@ -7,6 +7,7 @@
 package com.bos.art.logParser.statistics;
 
 import com.bos.art.logParser.broadcast.beans.AccessRecordsMinuteBean;
+import com.bos.art.logParser.broadcast.beans.MinuteStatsKey;
 import com.bos.art.logParser.broadcast.network.CommunicationChannel;
 import com.bos.art.logParser.db.AccessRecordPersistanceStrategy;
 import com.bos.art.logParser.db.ConnectionPoolT;
@@ -311,8 +312,34 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
     }
 
     private void broadcast(TimeSpanEventContainer tsec, MinuteStatsKey nextKey) {
-        AccessRecordsMinuteBean bean =
-                new AccessRecordsMinuteBean(tsec, nextKey);
+        AccessRecordsMinuteBean bean = new AccessRecordsMinuteBean() {
+            public AccessRecordsMinuteBean setData(TimeSpanEventContainer tsec,MinuteStatsKey lkey ) {
+                //mkey = lkey;
+                setMkey(lkey);
+                context = tsec.getContext();
+                machine = lkey.getServerName();
+                instance = lkey.getInstanceName();
+                timeString = fdfKey.print( new DateTime(lkey.getTime()) );
+                totalLoads = tsec.getTotalLoads();
+                averageLoadTime = tsec.getAverageLoadTime();
+                totalLoadTime = tsec.getTotalLoadTime();
+                maxLoadTime = tsec.getMaxLoadTime();
+                minLoadTime = tsec.getMinLoadTime();
+                distinctUsers = tsec.getDistinctUsers();
+                totalUsers = tsec.getTotalUsers();
+                errorPages = tsec.getErrorPages();
+                thirtySecondLoads = tsec.getThirtySecondLoads();
+                twentySecondLoads = tsec.getTwentySecondLoads();
+                fifteenSecondLoads = tsec.getFifteenSecondLoads();
+                tenSecondLoads = tsec.getTenSecondLoads();
+                fiveSecondLoads = tsec.getFiveSecondLoads();
+                i90Percentile = tsec.get90Percentile();
+                i75Percentile = tsec.get75Percentile();
+                i50Percentile = tsec.get50Percentile();
+                i25Percentile = tsec.get25Percentile();
+                return this;
+            }
+        }.setData(tsec,nextKey);
         try {
             CommunicationChannel.getInstance().broadcast(bean, null);
         } catch (Exception e) {

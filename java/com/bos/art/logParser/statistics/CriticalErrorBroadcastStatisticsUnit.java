@@ -32,8 +32,20 @@ public class CriticalErrorBroadcastStatisticsUnit extends StatisticsUnit {
 		}
 	}
 	
-	private void broadcast(AccumulatorEventTiming event) {
-		ErrorStatBean bean = new ErrorStatBean(event);
+	private void broadcast(final AccumulatorEventTiming event) {
+        ErrorStatBean bean = new  ErrorStatBean() {
+            public ErrorStatBean setData(AccumulatorEventTiming mevent) {
+                mevent.setAppName(event.getAppName());
+                mevent.setBranchName(event.getBranchName());
+                mevent.setClassification(event.getClassification());
+                mevent.setContext(event.getContext());
+                mevent.setEventTime(event.getEventTime());
+                mevent.setServerName(event.getServerName());
+                mevent.setValue(event.getValue());
+                return this;
+            }
+        }.setData(event);
+
         try {
         	//logger.error("Sending the bean down the channel " + bean.toString());
 		    CommunicationChannel.getInstance().broadcast( bean, null);

@@ -502,7 +502,7 @@ public class ExternalTimingMachineClassificationMinuteStats extends StatisticsUn
     }
 
     private void broadcast(TimeSpanEventContainer tsec, String nextKey) {
-        ExternalAccessRecordsMinuteBean bean = new ExternalAccessRecordsMinuteBean(tsec, nextKey);
+        ExternalAccessRecordsMinuteBean bean = new ExternalAccessRecordsMinuteBeanImpl(tsec, nextKey);
         try {
             CommunicationChannel.getInstance().broadcast(bean, null);
         } catch (Exception e) {

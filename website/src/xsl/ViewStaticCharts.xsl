@@ -36,39 +36,6 @@
 
                 <div id="chatdiv">
 
-                <!--
-
-
-
-          
-
-                    <APPLET ARCHIVE="log4j.jar,jfreechart-0.9.18.jar,commons-collections-3.0.jar,jcommon-0.9.3.jar,logParser-applets.jar,LiveLogParser.jar,jgroups-core.jar,bos-common-logging.jar" 
-
-                        CODE="com.bos.applets.MessagingApplet"
-
-                        width="400" height="115" ALT="You should see an applet, not this text.">
-
-                        <param name="plot_image" VALUE = "/images/bg2.gif"/>
-
-                        <param name="chart_bgcolor" VALUE = "#FFFFFF"/>
-
-                    </APPLET> 
-
-          
-
-                    <APPLET ARCHIVE="log4j.jar,jfreechart-0.9.18.jar,commons-collections-3.0.jar,jcommon-0.9.3.jar,logParser-applets.jar,LiveLogParser.jar,jgroups-core.jar,bos-common-logging.jar" 
-
-                        CODE="com.bos.applets.LiveSessions"
-
-                        width="160" height="115" ALT="You should see an applet, not this text.">
-
-                        <param name="plot_image" VALUE = "/images/bg2.gif"/>
-
-                        <param name="chart_bgcolor" VALUE = "#FFFFFF"/>
-
-                    </APPLET> 
-
-                    -->
 
                 </div>
 
@@ -116,21 +83,6 @@
 
                 <img src="testchart.web?classification=7704&amp;start=20040706090000&amp;end=20040706150000" alt="Greetings There" height="225" width="700" />
 
-                <!--
-
-                    <APPLET ARCHIVE="log4j.jar,jfreechart-0.9.18.jar,commons-collections-3.0.jar,jcommon-0.9.3.jar,logParser-applets.jar,LiveLogParser.jar,jgroups-core.jar,bos-common-logging.jar" 
-
-                            CODE="com.bos.applets.AvgLoadTime"
-
-                            width="520" height="200" ALT="Your browser has java disabled, please install a recent version of Java">
-
-                        <param name="plot_image" VALUE = "/images/bg6.gif"/>
-
-                        <param name="chart_bgcolor" VALUE = "#FFFFFF"/>
-
-                    </APPLET>
-
-                    -->
 
             </ul>
 
@@ -154,21 +106,6 @@
 
                 <p class="d1">The following are realtime graphs of the Average Page Load Time.</p>
 
-                   <!--
-
-                    <APPLET ARCHIVE="log4j.jar,jfreechart-0.9.18.jar,commons-collections-3.0.jar,jcommon-0.9.3.jar,logParser-applets.jar,LiveLogParser.jar,jgroups-core.jar,bos-common-logging.jar" 
-
-                            CODE="com.bos.applets.OffBoxGraphingApplet"
-
-                            width="540" height="600" ALT="Your browser has java disabled, please install a recent version of Java">
-
-                        <param name="plot_image" VALUE = "/images/bg6.gif"/>
-
-                        <param name="chart_bgcolor" VALUE = "#FFFFFF"/>
-
-                    </APPLET>
-
-                    -->
 
             </ul>
 

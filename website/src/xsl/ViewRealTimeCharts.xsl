@@ -15,7 +15,7 @@
             <div id="realtimegraphs">
                 <div id="chatdiv">
 
-                    <APPLET ARCHIVE="commons-logging.jar,log4j.jar,jfreechart-1.0.14.jar,commons-collections-3.0.jar,jcommon-1.0.17.jar,logParser-applets.jar,LiveLogParser.jar,jgroups.jar,concurrent.jar,bos-common-logging.jar,jaws.jar,commons-codec-1.4.jar,joda-time-2.1.jar" 
+                    <APPLET ARCHIVE="commons-logging-1.1.1.jar,log4j-1.2.17.jar,jfreechart-1.0.14.jar,commons-collections-3.2.1.jar,jcommon-1.0.17.jar,logParser-applets.jar,LiveLogParser.jar,jgroups.jar,concurrent-1.3.4.jar,bos-common-logging.jar,jaws.jar,commons-codec-1.4.jar,joda-time-2.1.jar"
                         CODE="com.bos.applets.LiveSessions"
                         mayscript="true" 
                         width="745" height="130" ALT="You should see an applet, not this text.">
@@ -42,7 +42,7 @@
 
             <ul id="ftr">
                 <p class="d1">Realtime graph of the Average Page Load Time by minute for the entire cluster</p>
-                    <APPLET ARCHIVE="commons-logging.jar,log4j.jar,jfreechart-1.0.14.jar,commons-collections-3.0.jar,jcommon-1.0.17.jar,logParser-applets.jar,LiveLogParser.jar,jgroups.jar,concurrent.jar,bos-common-logging.jar,jaws.jar,commons-codec-1.4.jar,joda-time-2.1.jar" 
+                    <APPLET ARCHIVE="commons-logging-1.1.1.jar,log4j-1.2.17.jar,jfreechart-1.0.14.jar,commons-collections-3.2.1.jar,jcommon-1.0.17.jar,logParser-applets.jar,LiveLogParser.jar,jgroups.jar,concurrent-1.3.4.jar,bos-common-logging.jar,jaws.jar,commons-codec-1.4.jar,joda-time-2.1.jar"
                             CODE="com.bos.applets.AvgLoadTime"
                             mayscript="true" 
                             width="720" height="200" ALT="Your browser has java disabled, please install a recent version of Java">
@@ -62,7 +62,7 @@
         <dl class="artTableFrame">
             <ul id="ftr">
                 <p class="d1">The following graphs are realtime views of all off-box transactions</p>
-                <APPLET ARCHIVE="commons-logging.jar,log4j.jar,jfreechart-1.0.14.jar,commons-collections-3.0.jar,jcommon-1.0.17.jar,logParser-applets.jar,LiveLogParser.jar,jgroups.jar,concurrent.jar,bos-common-logging.jar,jaws.jar,commons-codec-1.4.jar,joda-time-2.1.jar" 
+                <APPLET ARCHIVE="commons-logging-1.1.1.jar,log4j-1.2.17.jar,jfreechart-1.0.14.jar,commons-collections-3.2.1.jar,jcommon-1.0.17.jar,logParser-applets.jar,LiveLogParser.jar,jgroups.jar,concurrent-1.3.4.jar,bos-common-logging.jar,jaws.jar,commons-codec-1.4.jar,joda-time-2.1.jar"
                             CODE="com.bos.applets.OffBoxGraphingApplet"
                             mayscript="true" 
                             width="740" height="600" ALT="Your browser has java disabled, please install a recent version of Java">
