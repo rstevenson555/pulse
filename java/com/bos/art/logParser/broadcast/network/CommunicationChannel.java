@@ -185,7 +185,8 @@ public class CommunicationChannel extends ReceiverAdapter implements ChannelList
 
             System.out.println("connected to GMS:");
             System.err.println("connected to GMS:");
-             
+            logger.error("connected to GMS");
+
             // we will restart the connection every morning at 5:00 am
             // turn off the scheduler for now
             // ******************************************************************
