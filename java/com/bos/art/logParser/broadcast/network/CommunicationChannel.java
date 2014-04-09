@@ -175,12 +175,16 @@ public class CommunicationChannel extends ReceiverAdapter implements ChannelList
             } catch (Exception ex) {
                 //Logger.getLogger(AppletMessageListener.class.getName()).log(Level.SEVERE, null, ex);
                 System.err.println(ex);
+                System.out.println(ex);
             }
             
             allViewMembers = new CopyOnWriteArrayList<Address>();
             
             channel.connect("ART-DATA");            
             channel.addChannelListener(this);
+
+            System.out.println("connected to GMS:");
+            System.err.println("connected to GMS:");
              
             // we will restart the connection every morning at 5:00 am
             // turn off the scheduler for now
@@ -198,6 +202,8 @@ public class CommunicationChannel extends ReceiverAdapter implements ChannelList
             // timer.scheduleAtFixedRate( reconnectTask, morning.getTime(), 86400*1000 );
         } catch (InterruptedException e) {// ignore
         } catch (Exception ce) {
+            System.out.println("Error connected: " + ce);
+            System.err.println("Error connected: " + ce);
             logger.error("Channel Exception ", ce);
         }
     }
