@@ -427,10 +427,10 @@ public class BrowserStats extends StatisticsUnit {
         BrowserBean bean = new BrowserBean();
 
         bean.setCount(br.count);
-        bean.setBrowserString(br.browserString);
-        bean.setTotalCount(totalBrowsers.count);
-        bean.setIsOs(br.isOs);
-        bean.setDesc(br.desc);
+        bean.setBrowserString(br.getBrowserString());
+        bean.setTotalCount(totalBrowsers.getCount());
+        bean.setIsOs(br.isOs());
+        bean.setDesc(br.getDesc());
 
         logger.info("Broadcast Called for Browser Stats...." + br.toString());
         try {
@@ -440,7 +440,7 @@ public class BrowserStats extends StatisticsUnit {
         }
     }
 
-    static class BrowserRecord implements Serializable {
+    static class BrowserRecord  {
 
         public String recordType;
         public Pattern pattern;
@@ -465,6 +465,34 @@ public class BrowserStats extends StatisticsUnit {
             count = 0;
             isNew = true;
             isDirty = true;
+        }
+
+        public int getCount() {
+            return count;
+        }
+
+        public void setCount(int count) {
+            this.count = count;
+        }
+
+        public String getDesc() {
+            return desc;
+        }
+
+        public void setDesc(String desc) {
+            this.desc = desc;
+        }
+
+        public String getBrowserString() {
+            return browserString;
+        }
+
+        public boolean isOs() {
+            return isOs;
+        }
+
+        public void setOs(boolean isOs) {
+            this.isOs = isOs;
         }
 
         public void setType(String t) {
