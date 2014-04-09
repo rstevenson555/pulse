@@ -15,7 +15,7 @@ public class ExternalAccessRecordsMinuteBeanImpl extends ExternalAccessRecordsMi
         setKey(lkey);
         timeString = lkey.substring(0, MACHINE_START_INDEX);
 
-        System.out.println("lkey: " + lkey);
+//        System.out.println("lkey: " + lkey);
 
         int startMachine = lkey.indexOf(START_SERVER_DELIMETER) + START_SERVER_DELIMETER.length();
         int endMachine = lkey.indexOf(START_CLASSIFICATION_DELIMETER);
