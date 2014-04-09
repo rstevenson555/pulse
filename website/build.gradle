@@ -97,11 +97,13 @@ war {
     from 'src/html'
     from 'src/xsl'
     from 'src/jsp'
+    println "logParsre applets " +  "$project.buildDir/libs/logParser-applets.jar"
     //from ("$project.buildDir/appletlibs")
     from('src/jsp') {
         into('jsp-dir')
     }
-    from("$project.buildDir/libs/logParser-applets.jar")
+    //from("$project.buildDir/libs/logParser-applets.jar")
+    from("$parent.project.projectDir/logParser-applets/build/libs/logParser-applets.jar")
 
     webXml file('./logParser-website.xml')
 
