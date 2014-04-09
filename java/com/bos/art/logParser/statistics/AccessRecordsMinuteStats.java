@@ -178,8 +178,7 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
      */
     public void persistData() {
 
-        DateTime nextWriteDate = new DateTime(lastDataWriteTime);
-        nextWriteDate = nextWriteDate.plusSeconds(SECONDS_DELAY);
+        DateTime nextWriteDate = new DateTime(lastDataWriteTime).plusSeconds(SECONDS_DELAY);
 
         DateTime broadcastCutOff = new DateTime();
         broadcastCutOff = broadcastCutOff.minusHours(2);
@@ -265,11 +264,11 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
                                 + fdf.print(tsec.getLastModDate().getTime()));
             }
             insertData(tsec, nextKey);
-            if (logger.isDebugEnabled()) {
-                logger.debug(
+            //if (logger.isDebugEnabled()) {
+                logger.warn(
                         "persistData Broadcast Called for ...[Initial Write]:"
                                 + fdfKey.print(tsec.getTime().getTimeInMillis()));
-            }
+            //}
 
             broadcast(tsec, nextKey);
         } else if (shouldCloseRecord(tsec)) {
@@ -280,9 +279,10 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
                             + fdf.print(tsec.getLastModDate().getTime()));
             updateAndCloseData(tsec, nextKey);
             shouldRemove = true;
-            logger.info(
+            logger.warn(
                     "persistData Broadcast Called for ...[Close Time Period]:"
                             + fdfKey.print(tsec.getTime().getTimeInMillis()));
+
             broadcast(tsec, nextKey);
         } else if (tsec.isDatabaseDirty()) {
             if (tsec.getTime().getTime().after(broadcastCutOffTime.toDate())) {
@@ -294,11 +294,11 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
                                     + fdf.print(tsec.getLastModDate().getTime()));
                 }
                 updateData(tsec, nextKey, "O");
-                if (logger.isDebugEnabled()) {
-                    logger.debug(
+                //if (logger.isDebugEnabled()) {
+                    logger.warn(
                             "persistData Broadcast Called for ...[Update Time Period]:"
                                     + fdfKey.print(tsec.getTime().getTimeInMillis()));
-                }
+                //}
                 broadcast(tsec, nextKey);
             } else {
                 logger.warn(
