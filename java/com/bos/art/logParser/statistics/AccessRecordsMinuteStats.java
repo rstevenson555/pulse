@@ -252,7 +252,7 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
             TimeSpanEventContainer tsec,
             MinuteStatsKey nextKey,
             DateTime broadcastCutOffTime) {
-        //logger.info("persistData Called for :" + fdfKey.format(tsec.getTime()));
+        //logger.warn("persistData Called for :" + fdfKey.format(tsec.getTime()));
         boolean shouldRemove = false;
 
         if (tsec.getTimesPersisted() == 0) {
@@ -312,6 +312,8 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
     }
 
     private void broadcast(TimeSpanEventContainer tsec, MinuteStatsKey nextKey) {
+        System.out.println("AccessRecordsMinuteStats: broadcast " + (new Exception()));
+        logger.warn("AccessRecordsMinuteStats:  broadcast ",new Exception());
         AccessRecordsMinuteBean bean = new AccessRecordsMinuteBean() {
             public AccessRecordsMinuteBean setData(TimeSpanEventContainer tsec,MinuteStatsKey lkey ) {
                 //mkey = lkey;
