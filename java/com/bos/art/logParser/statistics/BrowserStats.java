@@ -17,6 +17,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -439,7 +440,7 @@ public class BrowserStats extends StatisticsUnit {
         }
     }
 
-    static class BrowserRecord {
+    static class BrowserRecord implements Serializable {
 
         public String recordType;
         public Pattern pattern;
