@@ -131,7 +131,7 @@ task copyDeployFilestoDestination(type: Copy) {
     if (project.hasProperty('target')) {
         logger.warn("target: $target" )
 
-        from "$project.buildDir/libs/LiveLogParser.jar"
+        from "$project.buildDir/libs/LiveLogParser-1.1.jar"
         into "$target/dist"
         // copy jars
         copy {
