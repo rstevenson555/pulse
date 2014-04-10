@@ -196,15 +196,15 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
         }
 
         if (new java.util.Date().after(nextWriteDate)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug(
+            //if (logger.isDebugEnabled()) {
+                logger.warn(
                         "persistCalled for Minute Stats time:nextWriteDate: -- "
                                 + System.currentTimeMillis()
                                 + ":"
                                 + nextWriteDate.getTime()
                                 + " diff:"
                                 + (System.currentTimeMillis() - nextWriteDate.getTime()));
-            }
+            //}
             lastDataWriteTime = new java.util.Date();
             for (MinuteStatsKey nextKey : minutes.keySet()) {
                 TimeSpanEventContainer tsec =
