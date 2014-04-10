@@ -213,6 +213,7 @@ public class AccessRecordsMinuteMachineStats extends StatisticsUnit {
                 if (persistData(tsec, nextKey)) {
                     //minutes.remove(nextKey);
                     iter.remove();
+                    break;
                 }
             }
         }
