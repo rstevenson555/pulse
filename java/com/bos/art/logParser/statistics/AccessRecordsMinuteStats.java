@@ -137,6 +137,7 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
 
         MinuteStatsKey key = new MinuteStatsKey();
         key.setTime(new DateTime(record.getEventTime().getTime()).withSecondOfMinute(0).toDate());
+        logger.warn("time: " + (new DateTime(record.getEventTime().getTime()).withSecondOfMinute(0).toDate()));
         key.setServerName(record.getServerName());
         key.setInstanceName(record.getInstance());
 
@@ -194,15 +195,15 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
         }
 
         if (new DateTime().isAfter(nextWriteDate)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug(
+            //if (logger.isDebugEnabled()) {
+                logger.warn(
                         "persistCalled for Minute Stats time:nextWriteDate: -- "
                                 + System.currentTimeMillis()
                                 + ":"
                                 + nextWriteDate.getMillis()
                                 + " diff:"
                                 + (System.currentTimeMillis() - nextWriteDate.getMillis()));
-            }
+            //}
             lastDataWriteTime = new DateTime();
             for (MinuteStatsKey nextKey : minutes.keySet()) {
                 TimeSpanEventContainer tsec =
