@@ -197,8 +197,7 @@ public class AccessRecordsMinuteMachineStats extends StatisticsUnit {
 
     public void persistData() {
 
-        DateTime nextWriteDate = new DateTime(lastDataWriteTime);
-        nextWriteDate = nextWriteDate.plusSeconds(SECONDS_DELAY);
+        DateTime nextWriteDate = new DateTime(lastDataWriteTime).plusSeconds(SECONDS_DELAY);
 
         logger.info("persistCalled for Minute Stats time:nextWriteDate: -- " + System.currentTimeMillis() + ":" + nextWriteDate.getMillis() + " diff:" + (System.currentTimeMillis() - nextWriteDate.getMillis()));
 

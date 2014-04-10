@@ -146,8 +146,7 @@ public class AccessRecordsHourlyStats extends StatisticsUnit {
      * @see com.bos.art.logParser.statistics.StatisticsUnit#persistData()
      */
     public void persistData() {
-        DateTime nextWriteDate = new DateTime(lastDataWriteTime);
-        nextWriteDate = nextWriteDate.plusMinutes(MINUTE_DELAY);
+        DateTime nextWriteDate = new DateTime(lastDataWriteTime).plusMinutes(MINUTE_DELAY);
 
         if (new DateTime().isAfter(nextWriteDate)) {
             lastDataWriteTime = new DateTime();

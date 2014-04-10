@@ -271,8 +271,7 @@ public class AccessRecordsDailyPageStats extends StatisticsUnit {
      */
     public void persistData() {
 
-        DateTime nextWriteDate = new DateTime(lastDataWriteTime);
-        nextWriteDate = nextWriteDate.plusMinutes(TEN_MINUTE_DELAY);
+        DateTime nextWriteDate = new DateTime(lastDataWriteTime).plusMinutes(TEN_MINUTE_DELAY);
 
         if (new DateTime().isAfter(nextWriteDate)) {
             // need to update the lastDataWriteTime

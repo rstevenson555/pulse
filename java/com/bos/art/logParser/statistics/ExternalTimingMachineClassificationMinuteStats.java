@@ -174,8 +174,7 @@ public class ExternalTimingMachineClassificationMinuteStats extends StatisticsUn
      */
     public void persistData() {
 
-        DateTime nextWriteDate = new DateTime(lastDataWriteTime);
-        nextWriteDate = nextWriteDate.plusSeconds(FIVE_SECOND_DELAY);
+        DateTime nextWriteDate = new DateTime(lastDataWriteTime).plusSeconds(FIVE_SECOND_DELAY);
 
         DateTime broadcastCutOff = new DateTime();
         broadcastCutOff = broadcastCutOff.minusHours(2);
