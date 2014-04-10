@@ -184,15 +184,16 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
         DateTime broadcastCutOff = new DateTime();
         broadcastCutOff = broadcastCutOff.minusHours(2);
 
-        if (logger.isDebugEnabled()) {
-            logger.debug(
+        //if (logger.isDebugEnabled()) {
+        logger.warn("persistData should only be called every 15 seconds");
+            logger.warn(
                     "persistCalled for Minute Stats time:nextWriteDate: -- "
                             + System.currentTimeMillis()
                             + ":"
                             + nextWriteDate.getMillis()
                             + " diff:"
                             + (System.currentTimeMillis() - nextWriteDate.getMillis()));
-        }
+        //}
 
         if (new DateTime().isAfter(nextWriteDate)) {
             if (logger.isDebugEnabled()) {
