@@ -313,8 +313,8 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
     }
 
     private void broadcast(TimeSpanEventContainer tsec, MinuteStatsKey nextKey) {
-        System.out.println("AccessRecordsMinuteStats: broadcast " + (new Exception()));
-        logger.warn("AccessRecordsMinuteStats:  broadcast ",new Exception());
+        //System.out.println("AccessRecordsMinuteStats: broadcast " + (new Exception()));
+        //logger.warn("AccessRecordsMinuteStats:  broadcast ",new Exception());
         AccessRecordsMinuteBean bean = new AccessRecordsMinuteBean() {
             public AccessRecordsMinuteBean setData(TimeSpanEventContainer tsec,MinuteStatsKey lkey ) {
                 //mkey = lkey;
