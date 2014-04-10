@@ -23,7 +23,10 @@ import org.joda.time.format.DateTimeFormatter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -134,7 +137,6 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
 
         MinuteStatsKey key = new MinuteStatsKey();
         key.setTime(new DateTime(record.getEventTime().getTime()).withSecondOfMinute(0).toDate());
-        logger.warn("time: " + (new DateTime(record.getEventTime().getTime()).withSecondOfMinute(0).toDate()));
         key.setServerName(record.getServerName());
         key.setInstanceName(record.getInstance());
 
@@ -176,7 +178,8 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
      */
     public void persistData() {
 
-        DateTime nextWriteDate = new DateTime(lastDataWriteTime).plusSeconds(15);
+        DateTime nextWriteDate = new DateTime(lastDataWriteTime);
+        nextWriteDate = nextWriteDate.plusSeconds(SECONDS_DELAY);
 
         DateTime broadcastCutOff = new DateTime();
         broadcastCutOff = broadcastCutOff.minusHours(2);
@@ -192,24 +195,21 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
         }
 
         if (new DateTime().isAfter(nextWriteDate)) {
-            //if (logger.isDebugEnabled()) {
-                logger.warn(
+            if (logger.isDebugEnabled()) {
+                logger.debug(
                         "persistCalled for Minute Stats time:nextWriteDate: -- "
                                 + System.currentTimeMillis()
                                 + ":"
                                 + nextWriteDate.getMillis()
                                 + " diff:"
                                 + (System.currentTimeMillis() - nextWriteDate.getMillis()));
-            //}
+            }
             lastDataWriteTime = new DateTime();
-            //for (MinuteStatsKey nextKey : minutes.keySet()) {
-            for(Iterator<MinuteStatsKey> iter = minutes.keySet().iterator();iter.hasNext();) {
-                MinuteStatsKey nextKey = iter.next();
+            for (MinuteStatsKey nextKey : minutes.keySet()) {
                 TimeSpanEventContainer tsec =
                         (TimeSpanEventContainer) minutes.get(nextKey);
                 if (persistData(tsec, nextKey, broadcastCutOff)) {
-                    //minutes.remove(nextKey);
-                    iter.remove();
+                    minutes.remove(nextKey);
                 }
             }
         }
@@ -253,7 +253,7 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
             TimeSpanEventContainer tsec,
             MinuteStatsKey nextKey,
             DateTime broadcastCutOffTime) {
-        //logger.warn("persistData Called for :" + fdfKey.format(tsec.getTime()));
+        //logger.info("persistData Called for :" + fdfKey.format(tsec.getTime()));
         boolean shouldRemove = false;
 
         if (tsec.getTimesPersisted() == 0) {
@@ -265,11 +265,11 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
                                 + fdf.print(tsec.getLastModDate().getTime()));
             }
             insertData(tsec, nextKey);
-            //if (logger.isDebugEnabled()) {
-                logger.warn(
+            if (logger.isDebugEnabled()) {
+                logger.debug(
                         "persistData Broadcast Called for ...[Initial Write]:"
                                 + fdfKey.print(tsec.getTime().getTimeInMillis()));
-            //}
+            }
 
             broadcast(tsec, nextKey);
         } else if (shouldCloseRecord(tsec)) {
@@ -280,10 +280,10 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
                             + fdf.print(tsec.getLastModDate().getTime()));
             updateAndCloseData(tsec, nextKey);
             shouldRemove = true;
-            logger.warn(
+            logger.info(
                     "persistData Broadcast Called for ...[Close Time Period]:"
-                            + fdfKey.print(tsec.getTime().getTimeInMillis()));
-
+                            + fdfKey.print(tsec.getTime().getTimeInMillis())
+            );
             broadcast(tsec, nextKey);
         } else if (tsec.isDatabaseDirty()) {
             if (tsec.getTime().getTime().after(broadcastCutOffTime.toDate())) {
@@ -295,11 +295,11 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
                                     + fdf.print(tsec.getLastModDate().getTime()));
                 }
                 updateData(tsec, nextKey, "O");
-                //if (logger.isDebugEnabled()) {
-                    logger.warn(
+                if (logger.isDebugEnabled()) {
+                    logger.debug(
                             "persistData Broadcast Called for ...[Update Time Period]:"
                                     + fdfKey.print(tsec.getTime().getTimeInMillis()));
-                //}
+                }
                 broadcast(tsec, nextKey);
             } else {
                 logger.warn(
@@ -313,8 +313,8 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
     }
 
     private void broadcast(TimeSpanEventContainer tsec, MinuteStatsKey nextKey) {
-        //System.out.println("AccessRecordsMinuteStats: broadcast " + (new Exception()));
-        //logger.warn("AccessRecordsMinuteStats:  broadcast ",new Exception());
+//        AccessRecordsMinuteBean bean =
+//                new AccessRecordsMinuteBean(tsec, nextKey);
         AccessRecordsMinuteBean bean = new AccessRecordsMinuteBean() {
             public AccessRecordsMinuteBean setData(TimeSpanEventContainer tsec,MinuteStatsKey lkey ) {
                 //mkey = lkey;
