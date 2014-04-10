@@ -257,19 +257,19 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
         boolean shouldRemove = false;
 
         if (tsec.getTimesPersisted() == 0) {
-            if (logger.isDebugEnabled()) {
-                logger.debug(
+            //if (logger.isDebugEnabled()) {
+                logger.warn(
                         "FirstTime Persist for getTime()--lastModTime()"
                                 + fdf.print(tsec.getTime().getTimeInMillis())
                                 + "--"
                                 + fdf.print(tsec.getLastModDate().getTime()));
-            }
+            //}
             insertData(tsec, nextKey);
-            if (logger.isDebugEnabled()) {
-                logger.debug(
+           // if (logger.isDebugEnabled()) {
+                logger.warn(
                         "persistData Broadcast Called for ...[Initial Write]:"
                                 + fdfKey.print(tsec.getTime().getTimeInMillis()));
-            }
+           // }
 
             broadcast(tsec, nextKey);
         } else if (shouldCloseRecord(tsec)) {
@@ -280,7 +280,7 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
                             + fdf.print(tsec.getLastModDate().getTime()));
             updateAndCloseData(tsec, nextKey);
             shouldRemove = true;
-            logger.info(
+            logger.warn(
                     "persistData Broadcast Called for ...[Close Time Period]:"
                             + fdfKey.print(tsec.getTime().getTimeInMillis()));
             broadcast(tsec, nextKey);
@@ -294,11 +294,11 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
                                     + fdf.print(tsec.getLastModDate().getTime()));
                 }
                 updateData(tsec, nextKey, "O");
-                if (logger.isDebugEnabled()) {
-                    logger.debug(
+               // if (logger.isDebugEnabled()) {
+                    logger.warn(
                             "persistData Broadcast Called for ...[Update Time Period]:"
                                     + fdfKey.print(tsec.getTime().getTimeInMillis()));
-                }
+               // }
                 broadcast(tsec, nextKey);
             } else {
                 logger.warn(
