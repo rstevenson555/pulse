@@ -206,6 +206,7 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
                                 + (System.currentTimeMillis() - nextWriteDate.getMillis()));
             }
             lastDataWriteTime = new DateTime();
+            logger.warn("num minutes records: " + minutes.keySet().size());
             for (MinuteStatsKey nextKey : minutes.keySet()) {
                 TimeSpanEventContainer tsec =
                         (TimeSpanEventContainer) minutes.get(nextKey);
