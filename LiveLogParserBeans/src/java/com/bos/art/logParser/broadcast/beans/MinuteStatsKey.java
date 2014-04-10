@@ -47,6 +47,15 @@ public class MinuteStatsKey implements Serializable {
     }
 
     @Override
+    public String toString() {
+        return "MinuteStatsKey{" +
+                "time=" + time +
+                ", serverName='" + serverName + '\'' +
+                ", instanceName='" + instanceName + '\'' +
+                '}';
+    }
+
+    @Override
     public int hashCode() {
         int result = time != null ? time.hashCode() : 0;
         result = 31 * result + (serverName != null ? serverName.hashCode() : 0);

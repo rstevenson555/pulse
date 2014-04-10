@@ -7,6 +7,7 @@
 package com.bos.art.logParser.statistics;
 
 import com.bos.art.logParser.broadcast.beans.AccessRecordsMinuteBean;
+import com.bos.art.logParser.broadcast.beans.BeanBag;
 import com.bos.art.logParser.broadcast.beans.MinuteStatsKey;
 import com.bos.art.logParser.broadcast.network.CommunicationChannel;
 import com.bos.art.logParser.db.AccessRecordPersistanceStrategy;
@@ -134,9 +135,11 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
 
         MinuteStatsKey key = new MinuteStatsKey();
         key.setTime(new DateTime(record.getEventTime().getTime()).withSecondOfMinute(0).toDate());
-        logger.warn("time: " + (new DateTime(record.getEventTime().getTime()).withSecondOfMinute(0).toDate()));
+        //logger.warn("time: " + (new DateTime(record.getEventTime().getTime()).withSecondOfMinute(0).toDate()));
         key.setServerName(record.getServerName());
         key.setInstanceName(record.getInstance());
+
+        logger.warn(key);
 
         TimeSpanEventContainer container =
                 (TimeSpanEventContainer) minutes.get(key);
@@ -283,7 +286,8 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
             shouldRemove = true;
             logger.warn(
                     "persistData Broadcast Called for ...[Close Time Period]:"
-                            + fdfKey.print(tsec.getTime().getTimeInMillis()));
+                            + fdfKey.print(tsec.getTime().getTimeInMillis())
+            );
 
             broadcast(tsec, nextKey);
         } else if (tsec.isDatabaseDirty()) {
@@ -344,6 +348,7 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
                 return this;
             }
         }.setData(tsec,nextKey);
+
         try {
             CommunicationChannel.getInstance().broadcast(bean, null);
         } catch (Exception e) {
