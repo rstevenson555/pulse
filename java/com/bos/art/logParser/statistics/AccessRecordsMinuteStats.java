@@ -179,11 +179,9 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
      */
     public void persistData() {
 
-        DateTime nextWriteDate = new DateTime(lastDataWriteTime);
-        nextWriteDate = nextWriteDate.plusSeconds(SECONDS_DELAY);
+        DateTime nextWriteDate = new DateTime(lastDataWriteTime).plusSeconds(SECONDS_DELAY);
 
-        DateTime broadcastCutOff = new DateTime();
-        broadcastCutOff = broadcastCutOff.minusHours(2);
+        DateTime broadcastCutOff = new DateTime().minusHours(2);
 
         if (logger.isDebugEnabled()) {
             logger.debug(
