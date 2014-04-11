@@ -33,7 +33,6 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -149,7 +148,6 @@ public class AccessRecordsMinuteMachineStats extends StatisticsUnit {
         key.setTime(new DateTime(record.getEventTime().getTime()).withSecondOfMinute(0).toDate());
         key.setServerName(record.getServerName());
         key.setInstanceName(record.getInstance());
-        key.setMatchingResolution(MinuteStatsKey.SERVER_RESOLUTION);
 
         TimeSpanEventContainer container = minutes.get(key);
         if (container == null) {
@@ -199,7 +197,8 @@ public class AccessRecordsMinuteMachineStats extends StatisticsUnit {
 
     public void persistData() {
 
-        DateTime nextWriteDate = new DateTime(lastDataWriteTime).plusSeconds(SECONDS_DELAY);
+        DateTime nextWriteDate = new DateTime(lastDataWriteTime);
+        nextWriteDate = nextWriteDate.plusSeconds(SECONDS_DELAY);
 
         logger.info("persistCalled for Minute Stats time:nextWriteDate: -- " + System.currentTimeMillis() + ":" + nextWriteDate.getMillis() + " diff:" + (System.currentTimeMillis() - nextWriteDate.getMillis()));
 
@@ -207,14 +206,10 @@ public class AccessRecordsMinuteMachineStats extends StatisticsUnit {
             logger.info("persistCalled for Minute Stats time:nextWriteDate: -- " + System.currentTimeMillis() + ":" + nextWriteDate.getMillis() + " diff:" + (System.currentTimeMillis() - nextWriteDate.getMillis()));
             lastDataWriteTime = new DateTime();
 
-            //for (MinuteStatsKey nextKey : minutes.keySet()) {
-            for(Iterator<MinuteStatsKey> iter = minutes.keySet().iterator();iter.hasNext();) {
-                MinuteStatsKey nextKey = iter.next();
+            for (MinuteStatsKey nextKey : minutes.keySet()) {
                 TimeSpanEventContainer tsec =  minutes.get(nextKey);
                 if (persistData(tsec, nextKey)) {
-                    //minutes.remove(nextKey);
-                    iter.remove();
-                    break;
+                    minutes.remove(nextKey);
                 }
             }
         }
@@ -308,6 +303,7 @@ public class AccessRecordsMinuteMachineStats extends StatisticsUnit {
     private void broadcast(TimeSpanEventContainer tsec, MinuteStatsKey nextKey) {
         AccessRecordsMinuteBean bean = new AccessRecordsMinuteBean() {
             public AccessRecordsMinuteBean setData(TimeSpanEventContainer tsec,MinuteStatsKey lkey ) {
+                //mkey = lkey;
                 setMkey(lkey);
                 context = tsec.getContext();
                 machine = lkey.getServerName();
