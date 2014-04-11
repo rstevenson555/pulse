@@ -149,6 +149,7 @@ public class AccessRecordsMinuteMachineStats extends StatisticsUnit {
         key.setTime(new DateTime(record.getEventTime().getTime()).withSecondOfMinute(0).toDate());
         key.setServerName(record.getServerName());
         key.setInstanceName(record.getInstance());
+        key.setMatchingResolution(MinuteStatsKey.SERVER_RESOLUTION);
 
         TimeSpanEventContainer container = minutes.get(key);
         if (container == null) {

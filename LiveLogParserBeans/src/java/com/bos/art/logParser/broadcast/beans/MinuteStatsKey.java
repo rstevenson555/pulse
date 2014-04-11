@@ -10,6 +10,7 @@ public class MinuteStatsKey implements Serializable {
     private int matchResolution = FULL_RESOLUTION;
 
     public static int TIME_RESOLUTION = 1;
+    public static int SERVER_RESOLUTION = 2;
     public static int FULL_RESOLUTION = 10;
 
     public String getServerName() {
@@ -46,9 +47,12 @@ public class MinuteStatsKey implements Serializable {
 
         MinuteStatsKey that = (MinuteStatsKey) o;
 
-        if (matchResolution == FULL_RESOLUTION) {
-            if (instanceName != null ? !instanceName.equals(that.instanceName) : that.instanceName != null)
-                return false;
+        if (matchResolution == FULL_RESOLUTION || matchResolution == SERVER_RESOLUTION) {
+            if ( matchResolution != SERVER_RESOLUTION) {
+                if (instanceName != null ? !instanceName.equals(that.instanceName) : that.instanceName != null)
+                    return false;
+            }
+
             if (serverName != null ? !serverName.equals(that.serverName) : that.serverName != null) return false;
         }
         if (time != null ? !time.equals(that.time) : that.time != null) return false;
@@ -68,9 +72,11 @@ public class MinuteStatsKey implements Serializable {
     @Override
     public int hashCode() {
         int result = time != null ? time.hashCode() : 0;
-        if (matchResolution == FULL_RESOLUTION) {
+        if (matchResolution == FULL_RESOLUTION || matchResolution == SERVER_RESOLUTION) {
             result = 31 * result + (serverName != null ? serverName.hashCode() : 0);
-            result = 31 * result + (instanceName != null ? instanceName.hashCode() : 0);
+            if ( matchResolution != SERVER_RESOLUTION) {
+                result = 31 * result + (instanceName != null ? instanceName.hashCode() : 0);
+            }
         }
         return result;
     }
