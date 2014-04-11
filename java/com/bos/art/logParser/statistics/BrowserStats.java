@@ -440,7 +440,7 @@ public class BrowserStats extends StatisticsUnit {
         }
     }
 
-    static class BrowserRecord  {
+    private static class BrowserRecord implements Serializable {
 
         public String recordType;
         public Pattern pattern;
