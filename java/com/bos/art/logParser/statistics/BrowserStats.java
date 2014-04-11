@@ -426,7 +426,7 @@ public class BrowserStats extends StatisticsUnit {
 
         BrowserBean bean = new BrowserBean();
 
-        bean.setCount(br.count);
+        bean.setCount(br.getCount());
         bean.setBrowserString(br.getBrowserString());
         bean.setTotalCount(totalBrowsers.getCount());
         bean.setIsOs(br.isOs());
