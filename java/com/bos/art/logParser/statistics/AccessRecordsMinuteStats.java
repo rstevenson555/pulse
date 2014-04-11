@@ -134,6 +134,7 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
         //String key = fdfKey.print(record.getEventTime().getTime().getTime());
 
         MinuteStatsKey key = new MinuteStatsKey();
+        key.setMatchingResolution(MinuteStatsKey.TIME_RESOLUTION);
         key.setTime(new DateTime(record.getEventTime().getTime()).withSecondOfMinute(0).toDate());
         //logger.warn("time: " + (new DateTime(record.getEventTime().getTime()).withSecondOfMinute(0).toDate()));
         key.setServerName(record.getServerName());
