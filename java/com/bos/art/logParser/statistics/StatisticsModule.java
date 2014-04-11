@@ -49,9 +49,9 @@ public class StatisticsModule extends TimerTask implements Serializable {
 
     // made this a copyonwritearraylist, so we don't have to sync, and it's not added to
     // frequently so we don't need to worry about the overhead
-    private CopyOnWriteArrayList<StatisticsUnit> statUnits;
-    private Scheduler timer;
-    private Scheduler timerClean;
+    transient private CopyOnWriteArrayList<StatisticsUnit> statUnits;
+    transient private Scheduler timer;
+    transient private Scheduler timerClean;
     transient private DateTimeFormatter fdf = DateTimeFormat.forPattern("yyyy-MM/dd HH:mm:ss");
     private int FOUR_HOURS_OF_DATA = 4;
 
