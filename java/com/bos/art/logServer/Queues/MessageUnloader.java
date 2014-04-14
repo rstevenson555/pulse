@@ -21,45 +21,244 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class MessageUnloader implements MessageUnloaderMBean {
-    private static final int ENGINE_OUTPUT_BUFFER_SIZE = 1024 * 8;
+//    private static final int ENGINE_OUTPUT_BUFFER_SIZE = 1024 * 8;
 
+    private static final int OUTPUT_BUFFER_SIZE = 128 * 1024;
+    private static final int SOCKET_BUFFER = 262144;
     private static Logger logger = Logger.getLogger(MessageUnloader.class.getName());
+    private static BasicThreadFactory tFactory = new BasicThreadFactory.Builder()
+            .namingPattern("MessageUnloader-%d")
+            .build();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor(tFactory);
+    final private long reconnectionDelay = TimeIntervalConstants.THIRTY_SECONDS_MILLIS;
     private ObjectOutputStream outputStream = null;
     private Connector connector;
     private InetAddress address = null;
     private int port = 0;
-    final private long reconnectionDelay = TimeIntervalConstants.THIRTY_SECONDS_MILLIS;
     private boolean exitOnFinish = false;
     private long writeTime = System.currentTimeMillis();
     private Socket socket;
     private int failCount = 0;
-    private int MESSAGE_QUEUE_SIZE = 1*1024;
-    private static int SOCKET_BUFFER = 262144;
-    private static BasicThreadFactory tFactory = new BasicThreadFactory.Builder()
-            .namingPattern("MessageUnloader-%d")
-            .build();
-    private TPSCalculator tpsCalculator = new TPSCalculator();
-    private final ExecutorService executor = Executors.newSingleThreadExecutor(tFactory);
-
+    private int MESSAGE_QUEUE_SIZE = 1 * 1024;
     private Disruptor<ObjectEvent> disruptor = new Disruptor<ObjectEvent>(ObjectEvent.FACTORY, MESSAGE_QUEUE_SIZE, executor,
             ProducerType.SINGLE, new BlockingWaitStrategy());
+    private TPSCalculator tpsCalculator = new TPSCalculator();
+
+    /**
+     * create the disruptor and connect to the end point
+     */
+    public MessageUnloader() {
+
+        disruptor.handleExceptionsWith(new FatalExceptionHandler());
+
+        ObjectEventHandler handler = new ObjectEventHandler();
+        disruptor.handleEventsWith(handler);
+        disruptor.start();
+
+        // connect to the output
+
+        this.address = getAddressByName(Collector.ART_ENGINE_MACHINE);
+        this.port = Collector.ART_ENGINE_PORT;
+
+        connect(address, port);
+    }
+
+    static InetAddress getAddressByName(String host) {
+        try {
+            return InetAddress.getByName(host);
+
+        } catch (Exception e) {
+            logger.error("Could not find address of [" + host + "].");
+            return null;
+        }
+    }
+
+    /**
+     * return number of elements in the ringbuffer
+     *
+     * @return
+     */
+    public long size() {
+        return (disruptor.getRingBuffer().getBufferSize() - disruptor.getRingBuffer().remainingCapacity());
+    }
+
+    private void registerWithMBeanServer() {
+        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        ObjectName name = null;
+        try {
+            name = new ObjectName("com.omx.collector:type=MessageUnloaderMBean,name=MessageUnloader-" + socket.getLocalPort());
+            mbs.registerMBean(this, name);
+        } catch (MalformedObjectNameException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (InstanceAlreadyExistsException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (MBeanRegistrationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (NotCompliantMBeanException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        try {
+            cleanUp();
+        } finally {
+            super.finalize();
+        }
+    }
+
+//    static public MessageUnloader getInstance() {
+//        return instance;
+//    }
+
+    void fireConnector() {
+        if (connector == null) {
+            logger.info("Starting a new connector thread.");
+            connector = new Connector();
+            connector.setDaemon(true);
+            //connector.setPriority( Thread.MIN_PRIORITY );
+            connector.start();
+        }
+    }
+
+    /**
+     * Drop the connection to the remote host and release the underlying connector thread if it has been created
+     */
+    public void cleanUp() {
+        if (outputStream != null) {
+            try {
+                outputStream.close();
+
+            } catch (IOException e) {
+                logger.error("Could not close outputStream.");
+            }
+
+            outputStream = null;
+        }
+
+        if (connector != null) {
+            //logger.debug("Interrupting the connector.");
+            connector.interrupted = true;
+            connector = null;  // allow gc
+        }
+    }
+
+    void connect(InetAddress address, int port) {
+        if (this.address == null) {
+            return;
+        }
+
+        // First, close the previous connection if any.
+        cleanUp();
+
+        try {
+            logger.info("trying to connect to ArtEngine at: " + address + " port: " + port);
+            socket = new Socket(address, port);
+
+            logger.warn("Socket Buffer Size: " + socket.getSendBufferSize());
+            socket.setSendBufferSize(SOCKET_BUFFER);
+            logger.warn("Socket Buffer Size after change: " + socket.getSendBufferSize());
+
+            outputStream = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream(), OUTPUT_BUFFER_SIZE));
+            logger.info("Success connecting to ArtEngine at:" + address + " port: " + port);
+
+            registerWithMBeanServer();
+
+        } catch (IOException io) {
+            logger.error("Error connecting to : " + address + " " + io);
+            fireConnector(); // fire the connector thread
+        }
+    }
+
+    public void addMessage(final Object o) {
+        boolean success = disruptor.getRingBuffer().tryPublishEvent(new EventTranslator<ObjectEvent>() {
+            public void translateTo(ObjectEvent event, long sequence) {
+                event.record = o;
+            }
+
+        });
+        if (!success) {
+            failCount++;
+            if (++failCount % 100 == 0) {
+                logger.error("Failed to offer in queue to ArtEngine");
+            }
+        } else {
+            failCount = 0;
+        }
+    }
+
+    // JMX Interface exposed
+    public long getBufferSize() {
+        return disruptor.getBufferSize();
+    }
+
+    /**
+     * change the buffer size to nearest power of two
+     *
+     * @param sz
+     */
+    public void setBufferSize(long sz) {
+        disruptor.shutdown();
+
+        int psize = Util.ceilingNextPowerOfTwo((int) sz);
+
+        disruptor = new Disruptor<ObjectEvent>(ObjectEvent.FACTORY, psize, executor,
+                ProducerType.SINGLE, new BlockingWaitStrategy());
+
+        disruptor.handleExceptionsWith(new FatalExceptionHandler());
+
+        ObjectEventHandler handler = new ObjectEventHandler();
+        disruptor.handleEventsWith(handler);
+        disruptor.start();
+    }
+
+    // messages going to the ArtEngine
+
+    /**
+     * get the remaining capacity of the ringbuffer
+     *
+     * @return
+     */
+    public long getRemainingCapacity() {
+        return disruptor.getRingBuffer().remainingCapacity();
+    }
+
+    /**
+     * return messages per second calculation
+     *
+     * @return
+     */
+    public long getMessagesPerSecond() {
+        return tpsCalculator.getMessagesPerSecond();
+    }
+
+    public long getWriteCount() {
+        return tpsCalculator.getTransactionCount();
+    }
+
+    public void exitOnFinish() {
+        exitOnFinish = true;
+    }
+
+    private void writeData(ObjectOutputStream outputStream, Object event) throws IOException {
+        outputStream.writeObject(event);
+    }
+
+    /**
+     * drain the queue out
+     */
+    private void drainQueue(ObjectOutputStream outputStream) throws IOException {
+
+    }
 
     private static class ObjectEvent {
-        private Object record;
-
         public static final EventFactory<ObjectEvent> FACTORY = new EventFactory<ObjectEvent>() {
             public ObjectEvent newInstance() {
                 return new ObjectEvent();
             }
         };
-    }
-
-    /**
-     * return number of elements in the ringbuffer
-     * @return
-     */
-    public long size() {
-        return (disruptor.getRingBuffer().getBufferSize() - disruptor.getRingBuffer().remainingCapacity());
+        private Object record;
     }
 
     private class ObjectEventHandler implements EventHandler<ObjectEvent> {
@@ -134,55 +333,6 @@ public class MessageUnloader implements MessageUnloaderMBean {
     }
 
     /**
-     * create the disruptor and connect to the end point
-     */
-    public MessageUnloader() {
-
-        disruptor.handleExceptionsWith(new FatalExceptionHandler());
-
-        ObjectEventHandler handler = new ObjectEventHandler();
-        disruptor.handleEventsWith(handler);
-        disruptor.start();
-
-        // connect to the output
-
-        this.address = getAddressByName(Collector.ART_ENGINE_MACHINE);
-        this.port = Collector.ART_ENGINE_PORT;
-
-        connect(address, port);
-    }
-
-    private void registerWithMBeanServer() {
-        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-        ObjectName name = null;
-        try {
-            name = new ObjectName("com.omx.collector:type=MessageUnloaderMBean,name=MessageUnloader-"+socket.getLocalPort());
-            mbs.registerMBean(this, name);
-        } catch (MalformedObjectNameException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (InstanceAlreadyExistsException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (MBeanRegistrationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (NotCompliantMBeanException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-    }
-
-//    static public MessageUnloader getInstance() {
-//        return instance;
-//    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        try {
-            cleanUp();
-        } finally {
-            super.finalize();
-        }
-    }
-
-    /**
      * The Connector will reconnect when the server becomes available again. It does this by attempting to open a new
      * connection every
      * <code>reconnectionDelay</code> milliseconds.
@@ -196,7 +346,6 @@ public class MessageUnloader implements MessageUnloaderMBean {
     class Connector extends Thread {
 
         boolean interrupted = false;
-        private static final int SOCKET_BUFFER = 262144;
 
         @Override
         public void run() {
@@ -213,7 +362,7 @@ public class MessageUnloader implements MessageUnloaderMBean {
 
                     synchronized (this) {
 
-                        outputStream = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream(), 64 * 1024));
+                        outputStream = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream(), OUTPUT_BUFFER_SIZE));
                         logger.info("Success connecting to ArtEngine at:" + address + " port: " + port);
                         connector = null;
                         break;
@@ -236,155 +385,6 @@ public class MessageUnloader implements MessageUnloaderMBean {
             }
 
         }
-    }
-
-
-    void fireConnector() {
-        if (connector == null) {
-            logger.info("Starting a new connector thread.");
-            connector = new Connector();
-            connector.setDaemon(true);
-            //connector.setPriority( Thread.MIN_PRIORITY );
-            connector.start();
-        }
-    }
-
-    static InetAddress getAddressByName(String host) {
-        try {
-            return InetAddress.getByName(host);
-
-        } catch (Exception e) {
-            logger.error("Could not find address of [" + host + "].");
-            return null;
-        }
-    }
-
-    /**
-     * Drop the connection to the remote host and release the underlying connector thread if it has been created
-     */
-    public void cleanUp() {
-        if (outputStream != null) {
-            try {
-                outputStream.close();
-
-            } catch (IOException e) {
-                logger.error("Could not close outputStream.");
-            }
-
-            outputStream = null;
-        }
-
-        if (connector != null) {
-            //logger.debug("Interrupting the connector.");
-            connector.interrupted = true;
-            connector = null;  // allow gc
-        }
-    }
-
-    void connect(InetAddress address, int port) {
-        if (this.address == null) {
-            return;
-        }
-
-        // First, close the previous connection if any.
-        cleanUp();
-
-        try {
-            logger.info("trying to connect to ArtEngine at: " + address + " port: " + port);
-            socket = new Socket(address, port);
-
-            logger.warn("Socket Buffer Size: " + socket.getSendBufferSize());
-            socket.setSendBufferSize(262144);
-            logger.warn("Socket Buffer Size after change: " + socket.getSendBufferSize());
-
-            outputStream = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream(), 128 * 1024));
-            logger.info("Success connecting to ArtEngine at:" + address + " port: " + port);
-
-            registerWithMBeanServer();
-
-        } catch (IOException io) {
-            logger.error("Error connecting to : " + address + " " + io);
-            fireConnector(); // fire the connector thread
-        }
-    }
-
-    // messages going to the ArtEngine
-
-    public void addMessage(final Object o) {
-        boolean success = disruptor.getRingBuffer().tryPublishEvent(new EventTranslator<ObjectEvent>() {
-            public void translateTo(ObjectEvent event, long sequence) {
-                event.record = o;
-            }
-
-        });
-        if (!success) {
-            failCount++;
-            if (++failCount % 100 == 0) {
-                logger.error("Failed to offer in queue to ArtEngine");
-            }
-        } else {
-            failCount = 0;
-        }
-    }
-
-    // JMX Interface exposed
-    public long getBufferSize() {
-        return disruptor.getBufferSize();
-    }
-
-    /**
-     * get the remaining capacity of the ringbuffer
-     * @return
-     */
-    public long getRemainingCapacity() {
-        return disruptor.getRingBuffer().remainingCapacity();
-    }
-
-    /**
-     * change the buffer size to nearest power of two
-     * @param sz
-     */
-    public void setBufferSize(long sz) {
-        disruptor.shutdown();
-
-        int psize = Util.ceilingNextPowerOfTwo((int) sz);
-
-        disruptor = new Disruptor<ObjectEvent>(ObjectEvent.FACTORY, psize, executor,
-                ProducerType.SINGLE, new BlockingWaitStrategy());
-
-        disruptor.handleExceptionsWith(new FatalExceptionHandler());
-
-        ObjectEventHandler handler = new ObjectEventHandler();
-        disruptor.handleEventsWith(handler);
-        disruptor.start();
-    }
-
-    /**
-     * return messages per second calculation
-     * @return
-     */
-    public long getMessagesPerSecond() {
-        return tpsCalculator.getMessagesPerSecond();
-    }
-
-    public long getWriteCount() {
-        return tpsCalculator.getTransactionCount();
-    }
-
-    public void exitOnFinish() {
-        exitOnFinish = true;
-    }
-
-
-    private void writeData(ObjectOutputStream outputStream, Object event) throws IOException {
-        outputStream.writeObject(event);
-    }
-
-    /**
-     * drain the queue out
-     */
-    private void drainQueue(ObjectOutputStream outputStream) throws IOException {
-
     }
 }
 
