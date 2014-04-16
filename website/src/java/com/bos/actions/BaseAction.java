@@ -5,7 +5,7 @@ package com.bos.actions;
 import com.bcop.arch.exception.BOSApplicationRuntimeException;
 import com.bcop.arch.exception.RecoverableException;
 import com.bcop.arch.logger.Logger;
-import com.bcop.arch.patterns.pageListHandler.IPageListHandler;
+//import com.bcop.arch.patterns.pageListHandler.IPageListHandler;
 import org.apache.struts.action.Action;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -56,21 +56,21 @@ public abstract class BaseAction extends Action {
      * These files will then use the indicators to update your dom with xml for creating page navigation
      * links on the web page.
      */
-    public List initialisePageListHandler(HttpServletRequest req, IPageListHandler pageListHandler) throws Exception {
-        List pageElementsList;
-
-        String requestedPage = req.getParameter("requestedPage");
-        String requestedPageRange = req.getParameter("requestedPageRange");
-
-        if (requestedPage != null) {
-            pageElementsList = pageListHandler.getPage(Integer.parseInt(requestedPage));
-        } else if (requestedPageRange != null) {
-            pageElementsList = pageListHandler.getPageByRange(Integer.parseInt(requestedPageRange));
-        } else {
-            pageElementsList = pageListHandler.getPage(1);
-        }
-        return pageElementsList;
-    }
+//    public List initialisePageListHandler(HttpServletRequest req, IPageListHandler pageListHandler) throws Exception {
+//        List pageElementsList;
+//
+//        String requestedPage = req.getParameter("requestedPage");
+//        String requestedPageRange = req.getParameter("requestedPageRange");
+//
+//        if (requestedPage != null) {
+//            pageElementsList = pageListHandler.getPage(Integer.parseInt(requestedPage));
+//        } else if (requestedPageRange != null) {
+//            pageElementsList = pageListHandler.getPageByRange(Integer.parseInt(requestedPageRange));
+//        } else {
+//            pageElementsList = pageListHandler.getPage(1);
+//        }
+//        return pageElementsList;
+//    }
 
 
     /**

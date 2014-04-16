@@ -1,13 +1,7 @@
 apply plugin: 'java'
-
-//sourceCompatibility = 1.7
-//targetCompatibility = 1.7
+apply plugin: 'maven'
 
 dependencies {
-    //compile project('pulse:LiveLogParserBeans')
-//    println "parent dir: " + "$parent.project.projectDir/LiveLogParserBeans/build/classes/main"
-//    compile files("$parent.project.projectDir/LiveLogParserBeans/build/classes/main")
-    //compile project('LiveLogParserBeans')
     compile 'pulse:LiveLogParserBeans:1.1'
 
     compile 'org.jfree:jfreechart:1.0.14'
@@ -33,4 +27,21 @@ sourceSets {
 //            srcDir 'src/java'
 //        }
     }
+}
+
+uploadArchives {
+    def localRepoURL = 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
+    repositories {
+
+        repositories.mavenDeployer {
+            repository(url: localRepoURL)
+        }
+    }
+}
+
+version = 1.1
+group = "pulse"
+
+jar << {
+    uploadArchives.execute()
 }

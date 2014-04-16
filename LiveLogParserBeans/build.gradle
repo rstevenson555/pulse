@@ -1,8 +1,5 @@
 apply plugin: 'java'
 apply plugin: 'maven'
-//sourceCompatibility = 1.6
-//targetCompatibility = 1.7
-
 
 dependencies {
     compile 'log4j:log4j:1.2.17'
@@ -23,53 +20,20 @@ sourceSets {
     }
 }
 
-//def libFile = file('build/libs/LiveLogParserBeans.jar')
-//
-//artifacts {
-//    archives libFile
-//}
-
-//uploadArchives {
-//    repositories {
-//        mavenDeployer {
-//            repository(url: "file://localhost/tmp/myRepo/")
-//        }
-//    }
-//}
 
 uploadArchives {
     def localRepoURL = 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
-    //def localRepoURL = 'file://' + new File(System.getProperty('java.io.tmpdir'), 'tmp/myRepo').absolutePath
-    println localRepoURL
     repositories {
-//       flatDir {
-//           //dirs 'repos'
-//           dirs localRepoURL
-//       }
-//        ivy {
-//            url "../local-repo"
-//        }
-//        version = "1.0-SNAPSHOT"
-//        artifactId = "simple-project"
-//        groupId = "pulse"
 
         repositories.mavenDeployer {
-            //repository(url: "file:///localhost/tmp/myRepo/")
             repository(url: localRepoURL)
         }
-//        maven {
-//            url "file://localhost/tmp/myRepo/"
-//        }
     }
 }
 
 version = 1.1
 group = "pulse"
 
-//jar {
-//    project.version = 1.0
-//    project.group = "pulse"
-//}
 jar << {
     uploadArchives.execute()
 }

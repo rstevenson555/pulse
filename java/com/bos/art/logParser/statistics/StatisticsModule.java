@@ -126,7 +126,7 @@ public class StatisticsModule extends TimerTask implements Serializable {
 
     public void addStatUnit(StatisticsUnit su) {
         statUnits.add(su);
-        timer.executePeriodically(FIFTEEN_SECONDS_MILLIS, new Thread(su), true);
+        timer.executePeriodically(FIFTEEN_SECONDS_MILLIS, new MyRunnable(new Thread(su)), true);
     }
 
     public void removeStatUnit(StatisticsUnit su) {
@@ -234,7 +234,14 @@ public class StatisticsModule extends TimerTask implements Serializable {
         }
 
         public void run() {
-            runnable.run();
+
+            try {
+                runnable.run();
+            } catch(Exception e) {
+                logger.error("MyRunnable exception",e);
+            } catch(Throwable t) {
+                logger.error("MyRunnable throwable",t);
+            }
         }
     }
 }

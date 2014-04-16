@@ -3,14 +3,10 @@ apply plugin: 'java'
 apply plugin: 'war'
 apply plugin: 'idea'
 
-//sourceCompatibility = 1.7
-//targetCompatibility = 1.7
-
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
 
-    // The production code uses the SLF4J logging API at compile time
     compile 'org.jsoup:jsoup:1.7.2'
     compile 'org.yaml:snakeyaml:1.10'
     compile 'org.apache.commons:commons-lang3:3.2.1'
@@ -41,9 +37,8 @@ dependencies {
     compile files('lib/bos-common-utilities.jar', 'lib/cache.jar');
     compile files('lib/struts.jar', 'lib/axis.jar')
 
-    //compile files("$parent.project.buildDir/libs/LiveLogParser.jar")
     compile 'pulse:LiveLogParserBeans:1.1'
-
+    compile 'pulse:logParser-applets:1.1'
 
     //println "$parent.project.buildDir"
     // Declare the dependency for your favourite test framework you want to use in your tests.
@@ -64,31 +59,6 @@ sourceSets {
     }
 }
 
-//sourceSets.all {
-//    compileClasspath += configurations.appletCompile
-//}
-
-//task buildAppletJar(type: Jar) {
-//
-//    baseName = "logParser-applets"
-//    from sourceSets.main.output
-//    logger.warn("buildAppletJar")
-//}
-
-//task copyAppletJars(type: Copy) {
-//    into "$project.buildDir/appletlibs"
-//    from configurations.appletCompile
-//
-//    copy {
-//        from "$parent.project.projectDir/website/appletjars"
-//        into  "$parent.project.buildDir/appletlibs"
-//    }
-//}
-
-war.doFirst {
-//    copyAppletJars.execute()
-//    buildAppletJar.execute()
-}
 
 war {
     from('src/xsl') {
@@ -97,13 +67,9 @@ war {
     from 'src/html'
     from 'src/xsl'
     from 'src/jsp'
-    println "logParsre applets " +  "$project.buildDir/libs/logParser-applets.jar"
-    //from ("$project.buildDir/appletlibs")
     from('src/jsp') {
         into('jsp-dir')
     }
-    //from("$project.buildDir/libs/logParser-applets.jar")
-    from("$parent.project.projectDir/logParser-applets/build/libs/logParser-applets.jar")
 
     webXml file('./logParser-website.xml')
 
@@ -114,12 +80,10 @@ war {
         from ('src/dtd') {
             into('dtd')
         }
-        from('src/java') {
-            into('classes')
-            include '*.xml'
-            exclude 'com/**'
-        }
     }
+    from("$parent.project.projectDir/build/libs/LiveLogParser-1.1.jar")
+    println "$parent.project.projectDir/build/libs/LiveLogParser-1.1.jar"
+
     from configurations.runtime
     from('META-INF') {
         into('META-INF')
