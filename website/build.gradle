@@ -3,9 +3,16 @@ apply plugin: 'java'
 apply plugin: 'war'
 apply plugin: 'idea'
 
+configurations {
+    applet
+}
 
 // In this section you declare the dependencies for your production and test code
 dependencies {
+    applet 'commons-codec:commons-codec:1.4'
+    applet files('lib/jaws.jar','lib/jgroups.jar')
+    //applet 'javax.sql:rowset:1.0.1'
+    applet files('lib/rowset.jar')
 
     compile 'org.jsoup:jsoup:1.7.2'
     compile 'org.yaml:snakeyaml:1.10'
@@ -81,9 +88,13 @@ war {
             into('dtd')
         }
     }
+    // add files into the root
     from("$parent.project.projectDir/build/libs/LiveLogParser-1.1.jar")
     println "$parent.project.projectDir/build/libs/LiveLogParser-1.1.jar"
 
+    // applet jars
+    from configurations.applet
+    // runtime jars
     from configurations.runtime
     from('META-INF') {
         into('META-INF')
