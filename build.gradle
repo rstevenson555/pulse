@@ -91,13 +91,13 @@ sourceSets {
     }
 }
 
-task copyMiscellaneousToBuildDir(type: Copy) {
-    from "$project.projectDir/java"
-    into "$project.buildDir"
-    include "*.properties"
-    include "*.yml"
-    logger.warn("copyMiscellaneousToBuildDir")
-}
+//task copyMiscellaneousToBuildDir(type: Copy) {
+//    from "$project.projectDir/java"
+//    into "$project.buildDir"
+//    include "*.properties"
+//    include "*.yml"
+//    logger.warn("copyMiscellaneousToBuildDir")
+//}
 
 //task buildLiveLogParserBeansJar(type: Jar, dependsOn: 'compileJava') {
 //    baseName = "LiveLogParserBeans"
@@ -165,7 +165,7 @@ task copyDeployFilestoDestination(type: Copy) {
 
 build.doLast {
     //buildLiveLogParserJar.execute()
-    copyMiscellaneousToBuildDir.execute()
+//    copyMiscellaneousToBuildDir.execute()
     logger.warn("build.doLast")
 }
 
