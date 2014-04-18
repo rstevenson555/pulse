@@ -86,7 +86,7 @@ sourceSets {
             srcDir 'java'
         }
         resources {
-            //srcDir 'src/resources'
+            srcDir 'java'
         }
     }
 }
@@ -105,6 +105,10 @@ task copyMiscellaneousToBuildDir(type: Copy) {
 //    include "com/bos/art/logParser/broadcast/beans/*/**"
 //    logger.warn("buildLiveLogParserBeansJar")
 //}
+
+jar {
+    baseName = "LiveLogParser"
+}
 
 task buildLiveLogParserJar(type: Jar, dependsOn: 'copyMiscellaneousToBuildDir') {
     baseName = "LiveLogParser"
@@ -160,7 +164,7 @@ task copyDeployFilestoDestination(type: Copy) {
 }
 
 build.doLast {
-    buildLiveLogParserJar.execute()
+    //buildLiveLogParserJar.execute()
     copyMiscellaneousToBuildDir.execute()
     logger.warn("build.doLast")
 }
