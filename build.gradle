@@ -11,9 +11,10 @@
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
+apply plugin: 'project-report'
 
 sourceCompatibility = 1.6
-//targetCompatibility = 1.7
+targetCompatibility = 1.7
 version = 1.1
 group = "pulse"
 
@@ -22,11 +23,15 @@ buildscript {
     repositories {
         // Use 'maven central' for resolving your dependencies.
         // You can declare any Maven/Ivy/file repository here.
+        def localRepoURL = 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
+
         mavenCentral()
-        mavenLocal()
-//        maven { url "http://repo1.maven.org/maven2/"}
+        maven { url "http://mirrors.ibiblio.org/pub/mirrors/maven2"}
+
         maven { url "http://repository.jboss.org/nexus/content/repositories/deprecated" }
-        maven {url "file://localhost/tmp/myRepo/"}
+        mavenLocal()
+        maven {url localRepoURL}
+
     }
 }
 
@@ -38,8 +43,10 @@ allprojects {
         def localRepoURL = 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
 
         mavenCentral()
-        mavenLocal()
+        maven { url "http://mirrors.ibiblio.org/pub/mirrors/maven2"}
+
         maven { url "http://repository.jboss.org/nexus/content/repositories/deprecated" }
+        mavenLocal()
         maven {url localRepoURL}
 
     }
@@ -110,26 +117,26 @@ jar {
     baseName = "LiveLogParser"
 }
 
-task buildLiveLogParserJar(type: Jar, dependsOn: 'copyMiscellaneousToBuildDir') {
-    baseName = "LiveLogParser"
+//task buildLiveLogParserJar(type: Jar, dependsOn: 'copyMiscellaneousToBuildDir') {
+//    baseName = "LiveLogParser"
+//
+//    from(sourceSets.main.output) {
+//        //include "**/*.class"
+//    }
+//
+//    logger.warn("$project.buildDir")
+//    from("$project.buildDir") {
+//        include "**/*.properties"
+//        include "*.yml"
+//        includeEmptyDirs = false
+//    }
+//    logger.warn("buildLiveLogParserJar")
+//}
 
-    from(sourceSets.main.output) {
-        //include "**/*.class"
-    }
-
-    logger.warn("$project.buildDir")
-    from("$project.buildDir") {
-        include "**/*.properties"
-        include "*.yml"
-        includeEmptyDirs = false
-    }
-    logger.warn("buildLiveLogParserJar")
-}
-
-buildLiveLogParserJar << {
+//buildLiveLogParserJar << {
 //    buildLiveLogParserBeansJar.execute()
-    logger.warn("buildLiveLogParserJar")
-}
+//    logger.warn("buildLiveLogParserJar")
+//}
 
 task copyDeployFilestoDestination(type: Copy) {
     if (project.hasProperty('target')) {
@@ -163,13 +170,17 @@ task copyDeployFilestoDestination(type: Copy) {
 
 }
 
-build.doLast {
-    //buildLiveLogParserJar.execute()
-//    copyMiscellaneousToBuildDir.execute()
-    logger.warn("build.doLast")
-}
+//build.doLast {
+//    //buildLiveLogParserJar.execute()
+////    copyMiscellaneousToBuildDir.execute()
+//    logger.warn("build.doLast")
+//}
 
 task deployCodeFromExport(dependsOn: 'build') {
     copyDeployFilestoDestination.execute()
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.11'
 }
 
