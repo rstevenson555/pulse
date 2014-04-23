@@ -17,9 +17,9 @@ dependencies {
     applet 'pulse:logParser-applets:1.1'
 
     compile 'org.jsoup:jsoup:1.7.2'
-    compile 'org.yaml:snakeyaml:1.10'
+//    compile 'org.yaml:snakeyaml:1.10'
     compile 'org.apache.commons:commons-lang3:3.2.1'
-    compile 'commons-lang:commons-lang:2.0'
+//    compile 'commons-lang:commons-lang:2.0'
     compile 'log4j:log4j:1.2.17'
     compile 'commons-pool:commons-pool:1.6'
     compile 'commons-digester:commons-digester:1.8'
@@ -31,7 +31,6 @@ dependencies {
     compile 'javax.activation:activation:1.1'
     compile 'javax.mail:mail:1.4'
     compile 'commons-dbcp:commons-dbcp:1.4'
-    compile 'tomcat:servlet-api:5.0.16'
     compile 'hibernate:hibernate:2.1.7c'
     compile 'dom4j:dom4j:1.3'
     compile 'odmg:odmg:3.0'
@@ -48,6 +47,8 @@ dependencies {
 
     compile 'pulse:LiveLogParserBeans:1.1'
     compile 'pulse:logParser-applets:1.1'
+
+    providedCompile 'tomcat:servlet-api:5.0.16'
 
     runtime files('lib/ojdbc5.jar')
 
@@ -72,6 +73,7 @@ sourceSets {
 
 
 war {
+    println configurations.applet.dump()
     from('src/xsl') {
         into('stylesheets')
     }

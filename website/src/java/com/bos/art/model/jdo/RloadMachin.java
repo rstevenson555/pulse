@@ -2,9 +2,9 @@ package com.bos.art.model.jdo;
 
 import java.io.Serializable;
 import java.util.Date;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /** @author Hibernate CodeGenerator */
 public class RloadMachin implements Serializable {

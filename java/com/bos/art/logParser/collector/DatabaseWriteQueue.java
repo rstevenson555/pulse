@@ -82,7 +82,7 @@ public class DatabaseWriteQueue implements DatabaseWriteQueueMBean,Serializable 
             totalWriteTime += (System.currentTimeMillis() - writeStartTime);
             ++objectsWritten;
         }
-    }
+    };
 
     public DatabaseWriteQueue() {
 
