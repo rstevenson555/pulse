@@ -23,10 +23,7 @@ import org.joda.time.format.DateTimeFormatter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -204,11 +201,13 @@ public class AccessRecordsMinuteStats extends StatisticsUnit {
                                 + (System.currentTimeMillis() - nextWriteDate.getMillis()));
             }
             lastDataWriteTime = new DateTime();
-            for (MinuteStatsKey nextKey : minutes.keySet()) {
-                TimeSpanEventContainer tsec =
-                        (TimeSpanEventContainer) minutes.get(nextKey);
+            //for (MinuteStatsKey nextKey : minutes.keySet()) {
+            for(Iterator<MinuteStatsKey> iterator = minutes.keySet().iterator();iterator.hasNext();) {
+                MinuteStatsKey nextKey = iterator.next();
+                TimeSpanEventContainer tsec = minutes.get(nextKey);
                 if (persistData(tsec, nextKey, broadcastCutOff)) {
-                    minutes.remove(nextKey);
+                    //minutes.remove(nextKey);
+                    iterator.remove();
                 }
             }
         }

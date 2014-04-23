@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -206,10 +207,13 @@ public class AccessRecordsMinuteMachineStats extends StatisticsUnit {
             logger.info("persistCalled for Minute Stats time:nextWriteDate: -- " + System.currentTimeMillis() + ":" + nextWriteDate.getMillis() + " diff:" + (System.currentTimeMillis() - nextWriteDate.getMillis()));
             lastDataWriteTime = new DateTime();
 
-            for (MinuteStatsKey nextKey : minutes.keySet()) {
+            //for (MinuteStatsKey nextKey : minutes.keySet()) {
+            for(Iterator<MinuteStatsKey> iterator = minutes.keySet().iterator();iterator.hasNext();) {
+                MinuteStatsKey nextKey = iterator.next();
                 TimeSpanEventContainer tsec =  minutes.get(nextKey);
                 if (persistData(tsec, nextKey)) {
-                    minutes.remove(nextKey);
+                    //minutes.remove(nextKey);
+                    iterator.remove();
                 }
             }
         }
