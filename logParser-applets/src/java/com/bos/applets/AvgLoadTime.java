@@ -155,9 +155,9 @@ public class AvgLoadTime extends JApplet implements AccessRecordsDelegate {
             return size() >= this.maxCapacity;
       }
     }
-    private LRUMap<MinuteMachineKey,Double> requestsServedMap = new LRUMap(10000);
-    private LRUMap<MinuteMachineKey,Double> averageSeriesMap = new LRUMap(10000);
-    private LRUMap<MinuteMachineKey,Double> ninetySeriesMap = new LRUMap(10000);
+    private LRUMap<MinuteMachineKey,Double> requestsServedMap = new LRUMap(120);
+    private LRUMap<MinuteMachineKey,Double> averageSeriesMap = new LRUMap(120);
+    private LRUMap<MinuteMachineKey,Double> ninetySeriesMap = new LRUMap(120);
 
     private void initializeAxisRange() {
 

@@ -22,6 +22,8 @@
                         <param name="plot_image" VALUE = "/images/bg2.gif"/>
                         <param name="java_version" value="1.5+"/>
                         <param name="chart_bgcolor" VALUE = "#FFFFFF"/>
+                        <!--<PARAM name="permissions" value="all-permissions" />-->
+
                     </APPLET>  
                 </div>
             </div>
@@ -47,6 +49,7 @@
                             mayscript="true" 
                             width="720" height="200" ALT="Your browser has java disabled, please install a recent version of Java">
                         <!-- <param name="plot_bgcolor" VALUE = "#A57B46"/> -->
+                        <!--<PARAM name="permissions" value="all-permissions" />-->
                         <param name="plot_image" VALUE = "/images/bg6.gif"/>
                         <param name="java_version" value="1.5+"/>
                         <param name="chart_bgcolor" VALUE = "#FFFFFF"/>
@@ -66,7 +69,9 @@
                             CODE="com.bos.applets.OffBoxGraphingApplet"
                             mayscript="true" 
                             width="740" height="600" ALT="Your browser has java disabled, please install a recent version of Java">
-                        <param name="plot_image" VALUE = "/images/bg6.gif"/>
+                    <!--<PARAM name="permissions" value="all-permissions" />-->
+
+                    <param name="plot_image" VALUE = "/images/bg6.gif"/>
                         <param name="java_version" value="1.5+"/>
                         <param name="chart_bgcolor" VALUE = "#FFFFFF"/>
                     </APPLET>
