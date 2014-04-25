@@ -30,9 +30,9 @@ public class AccumulatorRecordsCleaner implements Task {
 
     private static final int VACUUM_REMOVAL_THRESHOLD = 20 * 1000000;
     private static final int MAX_INCREMENT = 500000;
-    private int minRecordPK;
-    private int maxRecordPK;
-    private int currentRecordPK;
+    private long minRecordPK;
+    private long maxRecordPK;
+    private long currentRecordPK;
     private long startTime;
     private long estimatedFinishTime;
     private int initialIncrementAmount = 2;
@@ -64,11 +64,11 @@ public class AccumulatorRecordsCleaner implements Task {
         PreparedStatement pstmt = null;
         PreparedStatement pstmt2 = null;
         try {
-            int maxRemoveRecordPK = (currentRecordPK + initialIncrementAmount < maxRecordPK) ? currentRecordPK + initialIncrementAmount : maxRecordPK;
+            long maxRemoveRecordPK = (currentRecordPK + initialIncrementAmount < maxRecordPK) ? currentRecordPK + initialIncrementAmount : maxRecordPK;
 
             pstmt = removeCon.prepareStatement("delete from accumulatorevent where accumulatorevent_id>=? and accumulatorevent_id<=?");
-            pstmt.setInt(1, currentRecordPK);
-            pstmt.setInt(2, maxRemoveRecordPK);
+            pstmt.setLong(1, currentRecordPK);
+            pstmt.setLong(2, maxRemoveRecordPK);
 
             int rowsRemoved = pstmt.executeUpdate();
             logger.info("AccumulatorEvent Rows Removed: " + rowsRemoved);
@@ -101,8 +101,8 @@ public class AccumulatorRecordsCleaner implements Task {
                 initialIncrementAmount = 4;
             }
         }
-        int totalRemovals = maxRecordPK - minRecordPK;
-        int removedRemovals = currentRecordPK - minRecordPK;
+        long totalRemovals = maxRecordPK - minRecordPK;
+        long removedRemovals = currentRecordPK - minRecordPK;
         double percentCompleted = 1.0;
         if (totalRemovals > 0) {
             percentCompleted = ((double) removedRemovals / (double) totalRemovals);
@@ -134,21 +134,21 @@ public class AccumulatorRecordsCleaner implements Task {
             con = ConnectionPoolT.getConnection();
             pstmt = con.prepareStatement(SELECT_LOWER_RECORDPK);
             rs = pstmt.executeQuery();
-            int systemMinRecordPK = 0;
+            long systemMinRecordPK = 0;
             while (rs.next()) {
-                systemMinRecordPK = rs.getInt("accumulatorevent_id");
+                systemMinRecordPK = rs.getLong("accumulatorevent_id");
             }
             minRecordPK = systemMinRecordPK;
             currentRecordPK = minRecordPK;
 
             pstmt2 = con.prepareStatement(SELECT_UPPER_RECORDPK);
             rs2 = pstmt2.executeQuery();
-            int systemMaxRecordPK = 0;
+            long systemMaxRecordPK = 0;
             if (rs2.next()) {
-                systemMaxRecordPK = rs2.getInt("accumulatorevent_id");
+                systemMaxRecordPK = rs2.getLong("accumulatorevent_id");
             }
             long targetTime = System.currentTimeMillis() - CLEAN_NUMBER_OF_DAYS;
-            int recordPKUpperLimit = estimateBounds(systemMinRecordPK, systemMaxRecordPK, targetTime);
+            long recordPKUpperLimit = estimateBounds(systemMinRecordPK, systemMaxRecordPK, targetTime);
             maxRecordPK = recordPKUpperLimit;
 
 
@@ -167,7 +167,7 @@ public class AccumulatorRecordsCleaner implements Task {
         }
     }
 
-    public int estimateBounds(int min, int max, long targetTime) throws SQLException {
+    public long estimateBounds(long min, long max, long targetTime) throws SQLException {
 
         System.out.println("Estimating Bounds for : " + min + " : " + max + " : " + targetTime);
         if (max - min < 100) {
@@ -176,7 +176,7 @@ public class AccumulatorRecordsCleaner implements Task {
         Connection conn = null;
         conn = ConnectionPoolT.getConnection();
         PreparedStatement pstmt = conn.prepareStatement(SELECT_RECORDPK_TIME);
-        pstmt.setInt(1, min);
+        pstmt.setLong(1, min);
         ResultSet rs = pstmt.executeQuery();
         long lowerTime = 0;
         long upperTime = 0;
@@ -184,7 +184,7 @@ public class AccumulatorRecordsCleaner implements Task {
             java.sql.Timestamp ts = rs.getTimestamp(1);
             lowerTime = ts.getTime();
         }
-        pstmt.setInt(1, max);
+        pstmt.setLong(1, max);
         rs = pstmt.executeQuery();
         if (rs.next()) {
             java.sql.Timestamp ts = rs.getTimestamp(1);
@@ -199,8 +199,8 @@ public class AccumulatorRecordsCleaner implements Task {
         pstmt = conn.prepareStatement(SELECT_UPPER_BOUND);
         pstmt.setInt(1, estimatedRPK);
         rs = pstmt.executeQuery();
-        int newMin = min;
-        int newMax = max;
+        long newMin = min;
+        long newMax = max;
         if (rs.next()) {
             int recordpk = rs.getInt("accumulatorevent_id");
             java.sql.Timestamp ts = rs.getTimestamp("time");
@@ -224,7 +224,7 @@ public class AccumulatorRecordsCleaner implements Task {
 
     }
 
-    public int getCurrentRecordPK() {
+    public long getCurrentRecordPK() {
         return currentRecordPK;
     }
 
@@ -248,7 +248,7 @@ public class AccumulatorRecordsCleaner implements Task {
         this.initialIncrementAmount = initialIncrementAmount;
     }
 
-    public int getMaxRecordPK() {
+    public long getMaxRecordPK() {
         return maxRecordPK;
     }
 
@@ -256,7 +256,7 @@ public class AccumulatorRecordsCleaner implements Task {
         this.maxRecordPK = maxRecordPK;
     }
 
-    public int getMinRecordPK() {
+    public long getMinRecordPK() {
         return minRecordPK;
     }
 
