@@ -1,6 +1,6 @@
 #export ANT_HOME=/opt/ant/apache-ant-1.5.4
 #export JAVA_HOME=/opt/java/jdk15
-export JAVA_HOME=/opt/art/java/jdk1.6.0_29
+export JAVA_HOME=/opt/art/java/jdk1.7.0_51
 export PATH=$JAVA_HOME/bin:$CATALINA_HOME/bin:$PATH
 export PATH=$ANT_HOME/bin:$JAVA_HOME/bin:$PATH
 
