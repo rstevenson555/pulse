@@ -45,15 +45,25 @@ group = "pulse"
 jar {
     manifest {
         //attributes("Implementation-Title": "Gradle", "Implementation-Version": version)
-        attributes("Manifest-Version":"1.0")
-        attributes("Permissions":"all-permissions")
-        attributes("Codebase":"prod-pulse stress-pulse")
+        attributes("Manifest-Version": "1.0")
+        attributes("Permissions": "all-permissions")
+        attributes("Codebase": "prod-pulse stress-pulse")
 //        Manifest-Version: 1.0
 //        Created-By: 1.7.0_51
 //        Permissions: sandbox
 //        Codebase: www.java.com java.com
     }
 }
+
 jar << {
     uploadArchives.execute()
+
+    // create a keystore and sign it with self signed certificate
+//    keytool -genkey -keystore myKeyStore.ks -alias omx
+//    keytool -selfcert -keystore myKeyStore.ks -alias omx
+
+    ant.signjar(jar:jar.archivePath,
+            alias:'omx',
+            storepass:'officemax1',
+            keystore:"$project.projectDir/myKeyStore.ks")
 }
