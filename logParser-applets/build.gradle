@@ -56,7 +56,6 @@ jar {
 }
 
 jar << {
-    uploadArchives.execute()
 
     // create a keystore and sign it with self signed certificate
 //    keytool -genkey -keystore myKeyStore.ks -alias omx
@@ -66,4 +65,7 @@ jar << {
             alias:'omx',
             storepass:'officemax1',
             keystore:"$project.projectDir/myKeyStore.ks")
+
+    uploadArchives.execute()
+
 }
