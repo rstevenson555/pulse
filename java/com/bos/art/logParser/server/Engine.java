@@ -7,6 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
+import java.net.SocketAddress;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -23,6 +25,7 @@ import org.apache.commons.dbcp2.PoolingDriver;
 import org.apache.commons.dbcp2.PoolableConnectionFactory;
 import org.apache.commons.dbcp2.DriverManagerConnectionFactory;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.yaml.snakeyaml.Yaml;
@@ -45,6 +48,7 @@ public class Engine {
     private static final String LOCALCONFIG = "localconfig";
     public static int ART_ENGINE_PORT=0;
     public static String ART_ENGINE_MACHINE="";
+    private static int SOCKET_BUFFER = 262144;
 
 
     static public void init() {
@@ -113,7 +117,9 @@ public class Engine {
         DBDriverName = (String)dbsettings.get("drivername");
         DB_URL = (String)dbsettings.get("driver") + "://" + (String)dbsettings.get("host") + ":"
                 + dbsettings.get("port") + "/" + dbsettings.get("instance") + "?user="
-                + dbsettings.get("login") + "&password=" + dbsettings.get("pwd");
+                + dbsettings.get("login") + "&password=" + dbsettings.get("pwd")
+                + "&sendBufferSize=" +SOCKET_BUFFER + "&receiveBufferSize=" +SOCKET_BUFFER
+                + "&recvBufferSize=" + SOCKET_BUFFER;
 
         Map javagroups = (Map) config.get("javagroups");
         gossipServer = (String) javagroups.get("gossipserver");
@@ -134,19 +140,24 @@ public class Engine {
     public static void run(String args[]) {
 
         int connections = 1;
-        ExecutorService pool = Executors.newCachedThreadPool();
+        BasicThreadFactory tFactory = new BasicThreadFactory.Builder()
+                .namingPattern("Engine Client Handler-%d")
+                .build();
+
+        ExecutorService pool = Executors.newCachedThreadPool(tFactory);
 
         try {
 
             LiveLogUnloader.startHeapThread();
             LiveLogUnloader.startDBThread();
             LiveLogUnloader.startSystemTaskThread();
-            ServerSocket server = new ServerSocket(ART_ENGINE_PORT);
+            ServerSocket server = new ServerSocket();
+            SocketAddress localSocketAddress = new InetSocketAddress(ART_ENGINE_PORT);
+            server.setReceiveBufferSize(SOCKET_BUFFER);
+            server.bind(localSocketAddress);
 
-            while (true) {
-                for (;;) {
-                    pool.execute(new EngineClientHandler(server.accept(), connections++));
-                }
+            while(true) {
+                pool.execute(new EngineClientHandler(server.accept(), connections++));
             }
 
         } catch (Exception e) {
@@ -187,6 +198,7 @@ public class Engine {
         logger.debug("Done.");
     }
 
+
     public static void setupDriver(String connectURI) {
         //
         // First, we'll need a ObjectPool that serves as the
@@ -211,6 +223,9 @@ public class Engine {
         props.put("poolPreparedStatements","true");
         props.put("maxOpenPreparedStatements", "200");
         props.put("removeAbandoned", "true");
+        props.put("sendBufferSize",String.valueOf(SOCKET_BUFFER));
+        props.put("receiveBufferSize",String.valueOf(SOCKET_BUFFER));
+        props.put("recvBufferSize",String.valueOf(SOCKET_BUFFER));
         ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(connectURI, props);
 
         // connectionFactory.
@@ -219,8 +234,6 @@ public class Engine {
         // the "real" Connections created by the ConnectionFactory with
         // the classes that implement the pooling functionality.
         //
-//        PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory, connectionPool, null,
-//                null, false, true);
         PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory,null);
 
         GenericObjectPoolConfig config = new GenericObjectPoolConfig();
@@ -243,7 +256,7 @@ public class Engine {
 //        PoolingDriver driver = new PoolingDriver("jdbc:apache:commons:dbcp:");
         PoolingDriver driver = null;
         try {
-            driver = (PoolingDriver)DriverManager.getDriver("jdbc:apache:commons:dbcp:");
+            driver = (PoolingDriver) DriverManager.getDriver("jdbc:apache:commons:dbcp:");
         } catch (SQLException e) {
             e.printStackTrace();
         }
