@@ -8,15 +8,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
-
-import org.apache.commons.dbcp2.*;
 import org.apache.commons.pool2.ObjectPool;
 import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.dbcp2.ConnectionFactory;
+import org.apache.commons.dbcp2.PoolableConnection;
+import org.apache.commons.dbcp2.PoolingDriver;
+import org.apache.commons.dbcp2.PoolableConnectionFactory;
+import org.apache.commons.dbcp2.DriverManagerConnectionFactory;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -230,7 +235,18 @@ public class Engine {
         //
         // Finally, we create the PoolingDriver itself...
         //
-        PoolingDriver driver = new PoolingDriver();
+        try {
+            Class.forName("org.apache.commons.dbcp2.PoolingDriver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+//        PoolingDriver driver = new PoolingDriver("jdbc:apache:commons:dbcp:");
+        PoolingDriver driver = null;
+        try {
+            driver = (PoolingDriver)DriverManager.getDriver("jdbc:apache:commons:dbcp:");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         //
         // ...and register our pool with it.
