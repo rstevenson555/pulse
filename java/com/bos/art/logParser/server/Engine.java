@@ -1,6 +1,7 @@
 package com.bos.art.logParser.server;
 
 import com.bos.art.logParser.collector.LiveLogUnloader;
+import com.bos.art.logParser.db.ConnectionPoolT;
 import com.bos.art.logServer.main.Collector;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -10,6 +11,7 @@ import java.net.ServerSocket;
 import java.net.SocketAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Map;
@@ -169,6 +171,9 @@ public class Engine {
     public static void main(String args[]) {
         Engine.init();
         Engine.run(args);
+
+//        Engine.init();
+//        Engine.initializeDatabaseConnectionPooling();
     }
 
     public static void initializeDatabaseConnectionPooling() {
@@ -196,6 +201,7 @@ public class Engine {
         logger.debug("Setting up driver : " + DB_URL);
         setupDriver(DB_URL);
         logger.debug("Done.");
+
     }
 
 
@@ -243,7 +249,7 @@ public class Engine {
 //        ObjectPool connectionPoolFactory = new GenericObjectPool(poolableConnectionFactory);
         ObjectPool<PoolableConnection> connectionPool =
                 new GenericObjectPool(poolableConnectionFactory,config);
-
+         poolableConnectionFactory.setPool(connectionPool);
         // poolableConnectionFactory.set
         //
         // Finally, we create the PoolingDriver itself...
