@@ -6,6 +6,8 @@
  */
 package com.bos.art.logParser.db;
 
+import com.bos.art.logParser.server.Engine;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -31,7 +33,9 @@ public class ConnectionPoolT {
                 }
             }
         }
-		return DriverManager.getConnection(JDBC_APACHE_COMMONS_DBCP_ART_DB_POOL);
-	}
+		//return DriverManager.getConnection(JDBC_APACHE_COMMONS_DBCP_ART_DB_POOL);
+        return Engine.getDataSource().getConnection();
+    }
+
 
 }
