@@ -230,7 +230,7 @@ public class Engine {
         ds.setDriverClassName(DBDriverName);
         ds.setUrl(connectURI);
         //ds.setAbandonedUsageTracking(true);
-        //ds.setRemoveAbandonedOnMaintenance(true);
+        ds.setRemoveAbandonedOnMaintenance(true);
         ds.setRemoveAbandonedOnBorrow(true);
         ds.setRemoveAbandonedTimeout(240);
         ds.setMaxOpenPreparedStatements(200);
