@@ -169,10 +169,17 @@ public class Engine {
 
     public static void main(String args[]) {
         Engine.init();
-        Engine.run(args);
+        //Engine.run(args);
 
 //        Engine.init();
-//        Engine.initializeDatabaseConnectionPooling();
+        Engine.initializeDatabaseConnectionPooling();
+        try {
+            Connection conn = ConnectionPoolT.getConnection();
+            System.out.println(conn);
+            ;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void initializeDatabaseConnectionPooling() {
@@ -219,7 +226,7 @@ public class Engine {
         BasicDataSource ds = new BasicDataSource();
         //ds.setLogAbandoned(true);
         ds.setMaxTotal(MAX_ACTIVE_CONNECTIONS);
-        ds.setPoolPreparedStatements(true);
+        //ds.setPoolPreparedStatements(true);
         ds.setDriverClassName(DBDriverName);
         ds.setUrl(connectURI);
         //ds.setAbandonedUsageTracking(true);
@@ -227,6 +234,7 @@ public class Engine {
         ds.setRemoveAbandonedOnBorrow(true);
         ds.setRemoveAbandonedTimeout(240);
         ds.setMaxOpenPreparedStatements(200);
+        ds.setDefaultAutoCommit(true);
         //ds.setUsername(dbsettings.get("login"));
 
         dataSource = ds;
