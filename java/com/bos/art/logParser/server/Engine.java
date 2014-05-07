@@ -169,17 +169,17 @@ public class Engine {
 
     public static void main(String args[]) {
         Engine.init();
-        //Engine.run(args);
+        Engine.run(args);
 
 //        Engine.init();
-        Engine.initializeDatabaseConnectionPooling();
-        try {
-            Connection conn = ConnectionPoolT.getConnection();
-            System.out.println(conn);
-            ;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+//        Engine.initializeDatabaseConnectionPooling();
+//        try {
+//            Connection conn = ConnectionPoolT.getConnection();
+//            System.out.println(conn);
+//            ;
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public static void initializeDatabaseConnectionPooling() {
