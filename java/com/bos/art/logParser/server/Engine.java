@@ -218,11 +218,11 @@ public class Engine {
 
         BasicDataSource ds = new BasicDataSource();
         ds.setLogAbandoned(true);
-        ds.setMaxTotal(400);
+        ds.setMaxTotal(MAX_ACTIVE_CONNECTIONS);
         ds.setPoolPreparedStatements(true);
         ds.setDriverClassName(DBDriverName);
         ds.setUrl(connectURI);
-        ds.setAbandonedUsageTracking(true);
+        //ds.setAbandonedUsageTracking(true);
         ds.setRemoveAbandonedOnMaintenance(true);
         ds.setMaxOpenPreparedStatements(200);
         //ds.setUsername(dbsettings.get("login"));
