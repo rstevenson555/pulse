@@ -226,7 +226,7 @@ public class Engine {
         BasicDataSource ds = new BasicDataSource();
         //ds.setLogAbandoned(true);
         ds.setMaxTotal(MAX_ACTIVE_CONNECTIONS);
-        ds.setPoolPreparedStatements(true);
+        //ds.setPoolPreparedStatements(true);
         ds.setDriverClassName(DBDriverName);
         ds.setUrl(connectURI);
         //ds.setAbandonedUsageTracking(true);
