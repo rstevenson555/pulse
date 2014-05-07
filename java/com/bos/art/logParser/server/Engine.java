@@ -217,13 +217,15 @@ public class Engine {
         props.put("recvBufferSize",String.valueOf(SOCKET_BUFFER));
 
         BasicDataSource ds = new BasicDataSource();
-        ds.setLogAbandoned(true);
+        //ds.setLogAbandoned(true);
         ds.setMaxTotal(MAX_ACTIVE_CONNECTIONS);
         ds.setPoolPreparedStatements(true);
         ds.setDriverClassName(DBDriverName);
         ds.setUrl(connectURI);
         //ds.setAbandonedUsageTracking(true);
-        ds.setRemoveAbandonedOnMaintenance(true);
+        //ds.setRemoveAbandonedOnMaintenance(true);
+        ds.setRemoveAbandonedOnBorrow(true);
+        ds.setRemoveAbandonedTimeout(240);
         ds.setMaxOpenPreparedStatements(200);
         //ds.setUsername(dbsettings.get("login"));
 
