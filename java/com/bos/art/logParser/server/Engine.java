@@ -1,7 +1,6 @@
 package com.bos.art.logParser.server;
 
 import com.bos.art.logParser.collector.LiveLogUnloader;
-import com.bos.art.logParser.db.ConnectionPoolT;
 import com.bos.art.logServer.main.Collector;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -11,25 +10,21 @@ import java.net.ServerSocket;
 import java.net.SocketAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
-
-import org.apache.commons.dbcp2.*;
-import org.apache.commons.pool2.ObjectPool;
-import org.apache.commons.pool2.impl.GenericObjectPool;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.apache.commons.dbcp.ConnectionFactory;
+import org.apache.commons.dbcp.DriverManagerConnectionFactory;
+import org.apache.commons.dbcp.PoolableConnectionFactory;
+import org.apache.commons.dbcp.PoolingDriver;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import org.apache.commons.pool.ObjectPool;
+import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.yaml.snakeyaml.Yaml;
-
-import javax.sql.DataSource;
 
 public class Engine {
 
@@ -170,16 +165,6 @@ public class Engine {
     public static void main(String args[]) {
         Engine.init();
         Engine.run(args);
-
-//        Engine.init();
-//        Engine.initializeDatabaseConnectionPooling();
-//        try {
-//            Connection conn = ConnectionPoolT.getConnection();
-//            System.out.println(conn);
-//            ;
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
     }
 
     public static void initializeDatabaseConnectionPooling() {
@@ -207,12 +192,27 @@ public class Engine {
         logger.debug("Setting up driver : " + DB_URL);
         setupDriver(DB_URL);
         logger.debug("Done.");
-
     }
 
 
     public static void setupDriver(String connectURI) {
+        //
+        // First, we'll need a ObjectPool that serves as the
+        // actual pool of connections.
+        //
+        // We'll use a GenericObjectPool instance, although
+        // any ObjectPool implementation will suffice.
+        //
+        ObjectPool connectionPool = new GenericObjectPool(null, MAX_ACTIVE_CONNECTIONS, GenericObjectPool.WHEN_EXHAUSTED_FAIL,
+                MAX_POOL_BLOCK);
 
+        //
+        // Next, we'll create a ConnectionFactory that the
+        // pool will use to create Connections.
+        // We'll use the DriverManagerConnectionFactory,
+        // using the connect string passed in the command line
+        // arguments.
+        //
         Properties props = new Properties();
 
         props.put("logAbandoned", "true");
@@ -222,29 +222,30 @@ public class Engine {
         props.put("sendBufferSize",String.valueOf(SOCKET_BUFFER));
         props.put("receiveBufferSize",String.valueOf(SOCKET_BUFFER));
         props.put("recvBufferSize",String.valueOf(SOCKET_BUFFER));
+        ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(connectURI, props);
 
-        BasicDataSource ds = new BasicDataSource();
-        //ds.setLogAbandoned(true);
-        ds.setMaxTotal(MAX_ACTIVE_CONNECTIONS);
-        //ds.setPoolPreparedStatements(true);
-        ds.setDriverClassName(DBDriverName);
-        ds.setUrl(connectURI);
-        //ds.setAbandonedUsageTracking(true);
-        ds.setRemoveAbandonedOnMaintenance(true);
-        ds.setRemoveAbandonedOnBorrow(true);
-        ds.setRemoveAbandonedTimeout(240);
-        ds.setMaxOpenPreparedStatements(200);
-        ds.setDefaultAutoCommit(true);
-        //ds.setUsername(dbsettings.get("login"));
+        // connectionFactory.
+        //
+        // Now we'll create the PoolableConnectionFactory, which wraps
+        // the "real" Connections created by the ConnectionFactory with
+        // the classes that implement the pooling functionality.
+        //
+        PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory, connectionPool, null,
+                null, false, true);
 
-        dataSource = ds;
+        ObjectPool connectionPoolFactory = new GenericObjectPool(poolableConnectionFactory);
 
-    }
+        // poolableConnectionFactory.set
+        //
+        // Finally, we create the PoolingDriver itself...
+        //
+        PoolingDriver driver = new PoolingDriver();
 
-    private static DataSource dataSource;
+        //
+        // ...and register our pool with it.
+        //
+        driver.registerPool("art-db-pool", connectionPool);
 
-    public static DataSource getDataSource() {
-        return dataSource;
     }
 
     public static void init(String args[]) {

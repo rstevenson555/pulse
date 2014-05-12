@@ -6,8 +6,6 @@
  */
 package com.bos.art.logParser.db;
 
-import com.bos.art.logParser.server.Engine;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -19,7 +17,7 @@ import java.sql.SQLException;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class ConnectionPoolT {
-	
+
     private static boolean conInit = false;
     private static Object lock = new Object();
     private static final String JDBC_APACHE_COMMONS_DBCP_ART_DB_POOL = "jdbc:apache:commons:dbcp:art-db-pool";
@@ -33,9 +31,7 @@ public class ConnectionPoolT {
                 }
             }
         }
-		//return DriverManager.getConnection(JDBC_APACHE_COMMONS_DBCP_ART_DB_POOL);
-        return Engine.getDataSource().getConnection();
+        return DriverManager.getConnection(JDBC_APACHE_COMMONS_DBCP_ART_DB_POOL);
     }
-
 
 }
